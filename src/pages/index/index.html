@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <link href="../../../styles.css" rel="stylesheet">
+    <meta http-equiv="Content-Security-Policy" content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
+    <title>Hello World!</title>
+</head>
+<body>
+<h1>Hello World!</h1>
+We are using Node.js <span id="node-version"></span>,
+Chromium <span id="chrome-version"></span>,
+and Electron <span id="electron-version"></span>.
+<section>
+
+    <div id="init_urp_login">获取验证码</div>
+    <img id="captcha" src="">
+</section>
+<!-- You can also require other files to run in this process -->
+<script src="../../../renderer.js"></script>
+
+<script src="index.js"></script>
+
+</body>
+</html>
