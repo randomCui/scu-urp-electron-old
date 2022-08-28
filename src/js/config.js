@@ -7,9 +7,9 @@ const http_head = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML,
 let JSESSIONID = ''
 
 module.exports = {
-    jwc_entry_url:jwc_entry_url,
-    jwc_captcha_url:jwc_captcha_url,
-    jwc_jc:jwc_jc,
-    JSESSIONID:JSESSIONID,
+    jwc_entry_url,
+    jwc_captcha_url,
+    jwc_jc,
+    JSESSIONID,
     http_head,
 }

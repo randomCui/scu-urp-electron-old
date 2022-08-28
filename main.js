@@ -45,11 +45,10 @@ app.on('window-all-closed', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-const {ipcMain} = require('electron')
-const {jwc_entry_url, jwc_jc, jwc_captcha_url, JSESSIONID, http_head} = require('./src/js/config')
+const {ipcMain} = require('electron');
+const {jwc_entry_url, jwc_jc, jwc_captcha_url, http_head} = require('./src/js/config');
+let {JSESSIONID} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-
-let global_cookie = undefined;
 
 ipcMain.handle('init_urp_login', () => {
     fetch(jwc_entry_url, {
@@ -61,7 +60,7 @@ ipcMain.handle('init_urp_login', () => {
         console.log(response.headers.get('set-cookie').split(';')[0])
         return response.headers.get('set-cookie').split(';')[0];  // eslint-disable-line
     }).then(cookie => {
-        global_cookie = cookie
+        JSESSIONID = cookie
         fetch(jwc_captcha_url, {
             headers: {
                 'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -79,20 +78,20 @@ ipcMain.handle('init_urp_login', () => {
     })
 })
 
-ipcMain.handle('urp_login',async (eventm,post_data)=>{
+ipcMain.handle('urp_login', async (eventm, post_data) => {
     console.log(post_data)
-    console.log(global_cookie)
-    fetch(jwc_jc,{
-        method:'POST',
-        headers:{
+    console.log(JSESSIONID)
+    fetch(jwc_jc, {
+        method: 'POST',
+        headers: {
             'Accept-Language': 'zh-CN,zh;q=0.9',
-            'Cookie': global_cookie,
+            'Cookie': JSESSIONID,
             'User-Agent': http_head,
         },
         body: new URLSearchParams(post_data),
-    }).then((response)=>{
+    }).then((response) => {
         console.log(response.url)
-        response.text().then((text)=>{
+        response.text().then((text) => {
             // console.log(text)
         })
     })

@@ -25,7 +25,7 @@ let indexBridge = {
             "j_password": password,
             "j_captcha": captcha,
         }
-        await ipcRenderer.invoke('urp_login',post_data)
+        await ipcRenderer.invoke('urp_login', post_data)
     }
 }
 
@@ -36,7 +36,6 @@ ipcRenderer.on("captcha_blob", (event, buffer) => {
     console.log(blob)
     img.setAttribute('src', URL.createObjectURL(blob))
 })
-
 
 
 contextBridge.exposeInMainWorld("indexBridge", indexBridge)
