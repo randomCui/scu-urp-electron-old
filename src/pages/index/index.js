@@ -1,4 +1,4 @@
-document.getElementById('init_urp_login').addEventListener("click", init_urp_login)
+document.getElementById('captcha_img').addEventListener("click", init_urp_login)
 document.getElementById('login').addEventListener("click", urp_login)
 
 function init_urp_login() {
@@ -13,3 +13,7 @@ function urp_login() {
         data.get('password'),
         data.get('captcha'))
 }
+
+document.addEventListener('DOMContentLoaded',(ev)=>{
+    init_urp_login()
+})

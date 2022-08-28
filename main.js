@@ -90,10 +90,15 @@ ipcMain.handle('urp_login', async (eventm, post_data) => {
         },
         body: new URLSearchParams(post_data),
     }).then((response) => {
-        console.log(response.url)
-        response.text().then((text) => {
-            // console.log(text)
-        })
+        console.log(response.url);
+        if(response.url === 'http://zhjw.scu.edu.cn/'){
+            console.log('登陆成功');
+        }
+        else {
+            let url = new URL(response.url);
+            let errorCode = url.searchParams.get('errorCode');
+            console.log('登陆失败' + errorCode)
+        }
     })
 
 })
