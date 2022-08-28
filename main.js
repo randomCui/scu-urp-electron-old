@@ -47,7 +47,7 @@ app.on('window-all-closed', function () {
 
 const {ipcMain} = require('electron');
 const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('./src/js/config');
-let {JSESSIONID} = require('./src/js/config')
+let {JSESSIONID, is_login} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 ipcMain.on('init_urp_login', () => {
@@ -80,6 +80,8 @@ ipcMain.on('init_urp_login', () => {
 })
 
 ipcMain.on('urp_login', async (event, post_data) => {
+    const md5 = require('md5')
+    post_data['j_password'] = md5(post_data['j_password'])
     console.log(post_data)
     console.log(JSESSIONID)
     fetch(jwc_jc, {
@@ -94,11 +96,15 @@ ipcMain.on('urp_login', async (event, post_data) => {
         console.log(response.url);
         if (response.url === jwc_home) {
             console.log('登陆成功');
+            is_login = true;
         } else {
             let url = new URL(response.url);
             let errorCode = url.searchParams.get('errorCode');
             console.log('登陆失败' + errorCode)
         }
     })
+})
 
+ipcMain.handle('check_login_state', () => {
+    return is_login
 })

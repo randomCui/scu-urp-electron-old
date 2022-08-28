@@ -18,14 +18,15 @@ let indexBridge = {
         await ipcRenderer.send('init_urp_login')
     },
     urp_login: async (studentID, password, captcha) => {
-        const md5 = require('md5')
-        password = md5(password)
         let post_data = {
             "j_username": studentID,
             "j_password": password,
             "j_captcha": captcha,
         }
         await ipcRenderer.send('urp_login', post_data)
+    },
+    check_login_state: async () => {
+        return await ipcRenderer.invoke('check_login_state',)
     }
 }
 

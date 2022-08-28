@@ -1,8 +1,5 @@
 const fetch = require('node-fetch')
-
-let http_head = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1";
-
-const course_select_submit_url = "http://zhjw.scu.edu.cn/student/courseSelect/selectCourse/checkInputCodeAndSubmit"
+const {course_select_submit_url, http_head} = require('config')
 
 class DesiredCourse {
     constructor(ID, subID, semester, name, programPlanNumber, token) {
@@ -15,6 +12,20 @@ class DesiredCourse {
         this.postPayload = this.makePost()
     }
 
+    /***************
+     * 将该课程提交需要使用的json对象返回
+     ***********************
+     * dealType: 选课类型 <br>
+     * kcIDs: 课程编号 <br>
+     * kcms: 课程名 <br>
+     * fajhh: 方案计划号(?) <br>
+     * sj: (开课)时间 <br>
+     * searchtj: 搜索条件 <br>
+     * inputcode: 意义不明 <br>
+     * tokenValue: 用于选课的token <br>
+     *
+     * @returns {{kcIds: string, inputcode: string, fajhh, sj: string, searchtj, kclbdm: string, dealType: number, kcms: string, tokenValue}}
+     */
     makePost() {
         let make_kcms = () => {
             return [this.ID, this.subID, this.semester].join('@')
@@ -46,7 +57,7 @@ class CourseScheduler {
     }
 
     async start() {
-        while(this.keepSeeking) {
+        while (this.keepSeeking) {
             for (let course of this.pendingList) {
                 fetch(course_select_submit_url, {
                     method: 'POST',
@@ -57,26 +68,30 @@ class CourseScheduler {
                     body: course.postPayload,
                 }).then(/*do something*/)
             }
-            await setTimeout(console.log,this.interval,'完成一轮选课')
+            await setTimeout(console.log, this.interval, '完成一轮选课')
         }
     }
-    addCourse(course){
+
+    addCourse(course) {
         this.pendingList.push(course)
     }
-    delCourse(ID){
-        let index = this.pendingList.findIndex((value, index) => {return value.ID === ID})
-        this.pendingList.splice(index,1)
+
+    delCourse(ID) {
+        let index = this.pendingList.findIndex((value, index) => {
+            return value.ID === ID
+        })
+        this.pendingList.splice(index, 1)
     }
 }
 
 
-class CourseSelector{
-    searchCourse(option){
+class CourseSelector {
+    searchCourse(option) {
 
     }
 }
 
-class CourseShowContainer{
+class CourseShowContainer {
 
 }
 
