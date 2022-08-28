@@ -3,31 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <link href="../../../styles.css" rel="stylesheet">
+    <link href="index.css" rel="stylesheet">
     <meta http-equiv="Content-Security-Policy"
           content="default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;">
     <title>Hello World!</title>
 </head>
 <body>
-<h1>Hello World!</h1>
-We are using Node.js <span id="node-version"></span>,
-Chromium <span id="chrome-version"></span>,
-and Electron <span id="electron-version"></span>.
-<section>
-    <!--    <div id="init_urp_login">获取验证码</div>-->
-</section>
-<span id="login-wrapper">
-    <form id="login-form">
-        <input name="studentID" type="text" placeholder="学号">
-        <input name="password" type="password" placeholder="密码">
-        <input name="captcha" type="text" placeholder="验证码">
-        <img id="captcha_img" src="">
-        <input type="button" id="login" value="登录">
-    </form>
-</span>
-<span>
-    <a id="enter-course-scheduler" href="../class-selector/class-selection.html">自动抢课</a>
-</span>
+
+
+<ul>
+    <li><a class="active" href="index.html">Home</a></li>
+    <li><a href="../class-selector/auto_course_taker.html">自动抢课</a></li>
+    <li><a href="#">Contact</a></li>
+    <li><a href="#">About</a></li>
+</ul>
+<div id="content-wrapper">
+    <h1>Hello World!</h1>
+    We are using Node.js <span id="node-version"></span>,
+    Chromium <span id="chrome-version"></span>,
+    and Electron <span id="electron-version"></span>.
+    <div id="login-wrapper">
+        <form id="login-form">
+            <input name="studentID" type="text" placeholder="学号">
+            <input name="password" type="password" placeholder="密码">
+            <input name="captcha" type="text" placeholder="验证码">
+            <img id="captcha_img" src="">
+            <input type="button" id="login" value="登录">
+        </form>
+    </div>
+</div>
+
+<!--<a id="enter-course-scheduler" href="../class-selector/auto_course_taker.html">自动抢课</a>-->
 <!-- You can also require other files to run in this process -->
 <script src="../../../renderer.js"></script>
 

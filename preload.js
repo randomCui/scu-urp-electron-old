@@ -27,6 +27,24 @@ let indexBridge = {
     },
     check_login_state: async () => {
         return await ipcRenderer.invoke('check_login_state',)
+    },
+    /******
+     * 通过给定的字符串搜索符合条件的课程
+     *
+     * @param conditionMap 保存条件和值的Map对象
+     */
+    searchCourse: async (conditionMap)=>{
+        let search_string = '';
+        conditionMap.forEach((value)=>{
+            search_string += value + ' '
+        });
+        let searchPayload = {
+            "searchtj": search_string,
+            "xq": 0,
+            "jc": 0,
+            "kclbdm": ""
+        }
+        let response = await ipcRenderer.invoke('search_course',searchPayload)
     }
 }
 

@@ -108,3 +108,18 @@ ipcMain.on('urp_login', async (event, post_data) => {
 ipcMain.handle('check_login_state', () => {
     return is_login
 })
+
+ipcMain.handle('search_course',(event,payload)=>{
+    const{course_select_search_url} = require('./src/js/config');
+    // 获取到课程详细信息
+    fetch(course_select_search_url,{
+        method: 'POST',
+        headers: {
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+            'Cookie': JSESSIONID,
+            'User-Agent': http_head,
+        },
+    }).then(
+
+    )
+})
