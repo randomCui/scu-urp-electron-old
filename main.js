@@ -49,22 +49,25 @@ const {ipcMain} = require('electron')
 const {jwc_entry_url, jwc_jc, jwc_captcha_url, JSESSIONID, http_head} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+let global_cookie = undefined;
+
 ipcMain.handle('init_urp_login', () => {
     fetch(jwc_entry_url, {
         headers: {
             'User-Agent': http_head,
         },
-        credentials: 'include',
     }).then(response => {
         // console.log(response)
-        // console.log(response.headers.get('set-cookie').split(';')[0])
+        console.log(response.headers.get('set-cookie').split(';')[0])
         return response.headers.get('set-cookie').split(';')[0];  // eslint-disable-line
     }).then(cookie => {
+        global_cookie = cookie
         fetch(jwc_captcha_url, {
             headers: {
                 'Accept-Language': 'zh-CN,zh;q=0.9',
                 'Cookie': cookie,
                 'User-Agent': http_head,
+
             },
         }).then(response => {
             return response.buffer()
@@ -74,4 +77,24 @@ ipcMain.handle('init_urp_login', () => {
             mainWindow.webContents.send("captcha_blob", buffer)
         })
     })
+})
+
+ipcMain.handle('urp_login',async (eventm,post_data)=>{
+    console.log(post_data)
+    console.log(global_cookie)
+    fetch(jwc_jc,{
+        method:'POST',
+        headers:{
+            'Accept-Language': 'zh-CN,zh;q=0.9',
+            'Cookie': global_cookie,
+            'User-Agent': http_head,
+        },
+        body: new URLSearchParams(post_data),
+    }).then((response)=>{
+        console.log(response.url)
+        response.text().then((text)=>{
+            // console.log(text)
+        })
+    })
+
 })

@@ -13,10 +13,17 @@ We are using Node.js <span id="node-version"></span>,
 Chromium <span id="chrome-version"></span>,
 and Electron <span id="electron-version"></span>.
 <section>
-
     <div id="init_urp_login">获取验证码</div>
-    <img id="captcha" src="">
+    <img id="captcha_img" src="">
 </section>
+<span>
+    <form id="login-form">
+        <input name="studentID" type="text" placeholder="学号">
+        <input name="password" type="password" placeholder="密码">
+        <input name="captcha" type="text" placeholder="验证码">
+        <input type="button" id="login" value="登录">
+    </form>
+</span>
 <!-- You can also require other files to run in this process -->
 <script src="../../../renderer.js"></script>
 
