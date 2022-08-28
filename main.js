@@ -46,11 +46,11 @@ app.on('window-all-closed', function () {
 // code. You can also put them in separate files and require them here.
 
 const {ipcMain} = require('electron');
-const {jwc_entry_url, jwc_jc, jwc_captcha_url, http_head} = require('./src/js/config');
+const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('./src/js/config');
 let {JSESSIONID} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-ipcMain.handle('init_urp_login', () => {
+ipcMain.on('init_urp_login', () => {
     fetch(jwc_entry_url, {
         headers: {
             'User-Agent': http_head,
@@ -69,16 +69,17 @@ ipcMain.handle('init_urp_login', () => {
 
             },
         }).then(response => {
-            return response.buffer()
-        }).then((buffer) => {
-            console.log('success')
-            console.log(buffer)
-            mainWindow.webContents.send("captcha_blob", buffer)
+            return response.arrayBuffer()
+        }).then((arrayBuffer) => {
+            console.log('获取验证码成功')
+            // console.log(arrayBuffer)
+            // 由于ipc无法直接发送blob,因此发送arrayBuffer,在渲染侧重新组装成blob
+            mainWindow.webContents.send("captcha_blob", arrayBuffer)
         })
     })
 })
 
-ipcMain.handle('urp_login', async (eventm, post_data) => {
+ipcMain.on('urp_login', async (event, post_data) => {
     console.log(post_data)
     console.log(JSESSIONID)
     fetch(jwc_jc, {
@@ -91,10 +92,9 @@ ipcMain.handle('urp_login', async (eventm, post_data) => {
         body: new URLSearchParams(post_data),
     }).then((response) => {
         console.log(response.url);
-        if(response.url === 'http://zhjw.scu.edu.cn/'){
+        if (response.url === jwc_home) {
             console.log('登陆成功');
-        }
-        else {
+        } else {
             let url = new URL(response.url);
             let errorCode = url.searchParams.get('errorCode');
             console.log('登陆失败' + errorCode)

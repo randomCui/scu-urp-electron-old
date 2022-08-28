@@ -11,11 +11,11 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 })
 
-const {contextBridge, ipcMain, ipcRenderer} = require('electron')
+const {contextBridge, ipcRenderer} = require('electron')
 
 let indexBridge = {
     init_urp_login: async () => {
-        await ipcRenderer.invoke('init_urp_login')
+        await ipcRenderer.send('init_urp_login')
     },
     urp_login: async (studentID, password, captcha) => {
         const md5 = require('md5')
@@ -25,15 +25,15 @@ let indexBridge = {
             "j_password": password,
             "j_captcha": captcha,
         }
-        await ipcRenderer.invoke('urp_login', post_data)
+        await ipcRenderer.send('urp_login', post_data)
     }
 }
 
 ipcRenderer.on("captcha_blob", (event, buffer) => {
     let img = document.getElementById('captcha_img')
-    console.log(buffer)
+    // console.log(buffer)
     let blob = new Blob([buffer], {type: "image/jpeg"})
-    console.log(blob)
+    // console.log(blob)
     img.setAttribute('src', URL.createObjectURL(blob))
 })
 

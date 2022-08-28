@@ -14,6 +14,6 @@ function urp_login() {
         data.get('captcha'))
 }
 
-document.addEventListener('DOMContentLoaded',(ev)=>{
+document.addEventListener('DOMContentLoaded',()=>{
     init_urp_login()
 })
