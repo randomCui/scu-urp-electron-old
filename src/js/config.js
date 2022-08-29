@@ -26,7 +26,6 @@ module.exports = {
     course_select_submit_url,
     course_select_entry_url,
     course_select_search_url,
-    zhjwjs_url,
     http_head,
     JSESSIONID,
     isLogin,

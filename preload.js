@@ -75,6 +75,9 @@ let autoTakerBridge = {
     },
     is_course_selection_time: async () => {
         return await ipcRenderer.invoke('is_course_selection_time')
+    },
+    addSelectedCourses: async (course) => {
+        console.log(course)
     }
 }
 

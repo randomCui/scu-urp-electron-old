@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
+let courseJson;
+
 function searchCourse() {
     let form = document.getElementById('class-search-form')
     let map = new Map(new FormData(form).entries())
@@ -17,9 +19,10 @@ function searchCourse() {
         let totalResponse = JSON.parse(text)
         console.log(totalResponse)
         let courseList = totalResponse['list']['records']
-        console.log(courseList)
+        // console.log(courseList)
         return courseList
     }).then(courseList => {
+        courseJson = courseList
         // 先清除原来的课程表
         document.querySelector('tbody').innerHTML = ''
         buildForm(courseList)
@@ -47,9 +50,31 @@ function buildForm(json) {
 }
 
 document.querySelector('#course-info tbody').addEventListener('click', (ev) => {
-    console.log('点击事件');
-    console.log(ev.target.parentNode);
-    let row = ev.target.parentNode
-    row.setAttribute('class', 'selected')
-    row.querySelector('input').setAttribute('checked', true)
+    let row = ev.target.parentNode;
+    if (row.getAttribute('class')?.includes('selected')) {
+        row.setAttribute('class', '')
+        row.querySelector('input').removeAttribute('checked')
+    } else {
+        row.setAttribute('class', 'selected')
+        row.querySelector('input').setAttribute('checked', 'true')
+        console.log(row)
+    }
 })
+
+document.getElementById('add-course').addEventListener('click', () => {
+    let form = document.querySelector('#course-info tbody');
+    for (let row of form.rows) {
+        if (row.getAttribute('class')?.includes('selected')) {
+            let course = selectFromList(row.cells[0].innerText, row.cells[1].innerText)
+            console.log(course)
+            // window.autoTakerBridge.addSelectedCourses(course);
+        }
+    }
+})
+
+function selectFromList(ID, subID) {
+    return courseJson.find((value) => {
+        if (value['kch'] === ID && value['kxh'] === subID)
+            return true
+    })
+}

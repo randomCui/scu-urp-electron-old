@@ -126,7 +126,7 @@ ipcMain.handle('search_course', (event, payload) => {
 })
 
 ipcMain.handle('search_course_alt', async (event, payload) => {
-    const {zhjwjs_url,zhjwjs_search_url} = require('./test/test_config');
+    const {zhjwjs_url, zhjwjs_search_url} = require('./test/test_config');
     return await fetch(zhjwjs_url).then(response => {
         return response.headers.get('set-cookie').split(';')[0];
     }).then(cookie => {
