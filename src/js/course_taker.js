@@ -62,7 +62,7 @@ class CourseScheduler {
                 fetch(course_select_submit_url, {
                     method: 'POST',
                     headers: {
-                        'Cookie': 'JSESSIONID=' + this.cookie.get('JSESSIONID'),
+                        'Cookie': this.cookie,
                         'User-Agent': http_head,
                     },
                     body: course.postPayload,
@@ -78,7 +78,8 @@ class CourseScheduler {
 
     delCourse(ID) {
         let index = this.pendingList.findIndex((value, index) => {
-            return value.ID === ID
+            if(value.ID === ID)
+                return index
         })
         this.pendingList.splice(index, 1)
     }
@@ -95,8 +96,30 @@ class CourseShowContainer {
 
 }
 
-export {
+/**********
+ * 检查目前是否在选课阶段
+ *
+ * @param cookie
+ * @returns {Promise<void>}
+ */
+
+async function is_course_selection_time(cookie) {
+    const {course_select_search_url} = require('../js/config')
+    await fetch(course_select_search_url, {
+        headers: {
+            'Cookie': this.cookie,
+            'User-Agent': http_head,
+        },
+    }).then((response) => {
+        return response.text();
+    }).then((text) => {
+        return text.includes('自由选课');
+    })
+}
+
+module.exports = {
     CourseScheduler,
     CourseSelector,
     DesiredCourse,
+    is_course_selection_time,
 }
