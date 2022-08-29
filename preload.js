@@ -15,7 +15,8 @@ const {contextBridge, ipcRenderer} = require('electron')
 
 let indexBridge = {
     init_urp_login: async () => {
-        await ipcRenderer.send('init_urp_login')
+        let buffer = await ipcRenderer.invoke('init_urp_login')
+        return buffer
     },
     urp_login: async (studentID, password, captcha) => {
         let post_data = {
@@ -28,6 +29,9 @@ let indexBridge = {
     check_login_state: async () => {
         return await ipcRenderer.invoke('check_login_state',)
     },
+}
+
+let autoTakerBridge = {
     /******
      * 通过给定的字符串搜索符合条件的课程
      *
@@ -48,13 +52,6 @@ let indexBridge = {
     }
 }
 
-ipcRenderer.on("captcha_blob", (event, buffer) => {
-    let img = document.getElementById('captcha_img')
-    // console.log(buffer)
-    let blob = new Blob([buffer], {type: "image/jpeg"})
-    // console.log(blob)
-    img.setAttribute('src', URL.createObjectURL(blob))
-})
 
-
-contextBridge.exposeInMainWorld("indexBridge", indexBridge)
+contextBridge.exposeInMainWorld("indexBridge", indexBridge);
+contextBridge.exposeInMainWorld('autoTakerBridge', autoTakerBridge);

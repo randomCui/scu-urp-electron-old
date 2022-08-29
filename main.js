@@ -12,6 +12,7 @@ function createWindow() {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             webviewTag: true,
+            sandbox: false,
         }
     })
 
@@ -50,8 +51,8 @@ const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('.
 let {JSESSIONID, is_login} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-ipcMain.on('init_urp_login', () => {
-    fetch(jwc_entry_url, {
+ipcMain.handle('init_urp_login', async () => {
+    return await fetch(jwc_entry_url, {
         headers: {
             'User-Agent': http_head,
         },
@@ -61,21 +62,15 @@ ipcMain.on('init_urp_login', () => {
         return response.headers.get('set-cookie').split(';')[0];  // eslint-disable-line
     }).then(cookie => {
         JSESSIONID = cookie
-        fetch(jwc_captcha_url, {
+        return fetch(jwc_captcha_url, {
             headers: {
-                'Accept-Language': 'zh-CN,zh;q=0.9',
                 'Cookie': cookie,
                 'User-Agent': http_head,
-
             },
-        }).then(response => {
-            return response.arrayBuffer()
-        }).then((arrayBuffer) => {
-            console.log('获取验证码成功')
-            // console.log(arrayBuffer)
-            // 由于ipc无法直接发送blob,因此发送arrayBuffer,在渲染侧重新组装成blob
-            mainWindow.webContents.send("captcha_blob", arrayBuffer)
         })
+    }).then(response => {
+        console.log('获取验证码成功')
+        return response.arrayBuffer()
     })
 })
 
@@ -109,10 +104,10 @@ ipcMain.handle('check_login_state', () => {
     return is_login
 })
 
-ipcMain.handle('search_course',(event,payload)=>{
-    const{course_select_search_url} = require('./src/js/config');
+ipcMain.handle('search_course', (event, payload) => {
+    const {course_select_entry_url} = require('./src/js/config');
     // 获取到课程详细信息
-    fetch(course_select_search_url,{
+    fetch(course_select_entry_url, {
         method: 'POST',
         headers: {
             'Accept-Language': 'zh-CN,zh;q=0.9',
