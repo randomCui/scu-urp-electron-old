@@ -48,10 +48,11 @@ app.on('window-all-closed', function () {
 
 const {ipcMain} = require('electron');
 const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('./src/js/config');
-let {JSESSIONID, is_login} = require('./src/js/config')
+let {JSESSIONID, isLogin} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
 ipcMain.handle('init_urp_login', async () => {
+    // electron的ipc不能直接返回blob,因此这里返回arrayBuffer后再在渲染进程中组装成blob
     return await fetch(jwc_entry_url, {
         headers: {
             'User-Agent': http_head,
@@ -91,7 +92,7 @@ ipcMain.on('urp_login', async (event, post_data) => {
         console.log(response.url);
         if (response.url === jwc_home) {
             console.log('登陆成功');
-            is_login = true;
+            isLogin = true;
         } else {
             let url = new URL(response.url);
             let errorCode = url.searchParams.get('errorCode');
@@ -101,20 +102,49 @@ ipcMain.on('urp_login', async (event, post_data) => {
 })
 
 ipcMain.handle('check_login_state', () => {
-    return is_login
+    return isLogin
 })
 
 ipcMain.handle('search_course', (event, payload) => {
-    const {course_select_entry_url} = require('./src/js/config');
+    const {course_select_search_url} = require('./src/js/config');
     // 获取到课程详细信息
-    fetch(course_select_entry_url, {
+    return fetch(course_select_search_url, {
         method: 'POST',
         headers: {
             'Accept-Language': 'zh-CN,zh;q=0.9',
             'Cookie': JSESSIONID,
             'User-Agent': http_head,
         },
-    }).then(
+        body: payload,
+    }).then(response => {
+        return response.text()
+    }).then(text => {
+        let totalResponse = JSON.parse(text)
+        let courseList = JSON.parse(totalResponse['rwRxkZlList'])
+        return courseList
+    });
+})
 
-    )
+ipcMain.handle('search_course_alt', async (event, payload) => {
+    const {zhjwjs_url,zhjwjs_search_url} = require('./test/test_config');
+    return await fetch(zhjwjs_url).then(response => {
+        return response.headers.get('set-cookie').split(';')[0];
+    }).then(cookie => {
+        return fetch(zhjwjs_search_url, {
+            method: 'POST',
+            headers: {
+                'User-Agent': http_head,
+                'cookie': cookie,
+            },
+            body: new URLSearchParams(payload),
+        })
+    }).then(response => {
+        console.log(response)
+        return response.text()
+    })
+})
+
+ipcMain.handle('is_course_selection_time', async () => {
+    const {is_course_selection_time} = require('./src/js/course_taker')
+    return await is_course_selection_time(JSESSIONID)
 })

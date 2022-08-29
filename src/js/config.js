@@ -15,8 +15,8 @@ const course_select_entry_url = 'http://zhjw.scu.edu.cn/student/courseSelect/cou
 
 const http_head = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1";
 
-let JSESSIONID = ''
-let is_login = false
+let JSESSIONID = '';
+let isLogin = false;
 
 module.exports = {
     jwc_entry_url,
@@ -26,8 +26,8 @@ module.exports = {
     course_select_submit_url,
     course_select_entry_url,
     course_select_search_url,
+    zhjwjs_url,
     http_head,
-
     JSESSIONID,
-    is_login
+    isLogin,
 }

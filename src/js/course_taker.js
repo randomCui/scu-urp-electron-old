@@ -1,5 +1,6 @@
-const fetch = require('node-fetch')
-const {course_select_submit_url, http_head} = require('config')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+
+const {course_select_submit_url, http_head} = require('./config')
 
 class DesiredCourse {
     constructor(ID, subID, semester, name, programPlanNumber, token) {
@@ -105,7 +106,7 @@ class CourseShowContainer {
 
 async function is_course_selection_time(cookie) {
     const {course_select_search_url} = require('../js/config')
-    await fetch(course_select_search_url, {
+    return fetch(course_select_search_url, {
         headers: {
             'Cookie': this.cookie,
             'User-Agent': http_head,
