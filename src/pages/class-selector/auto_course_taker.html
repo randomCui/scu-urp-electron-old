@@ -24,19 +24,26 @@
                 <input type="button" id="launch-search" value="搜索课程"></input>
             </form>
             <h1 id="selection-state-indicator"></h1>
-            <table id="gable">
+            <table id="course-info">
                 <colgroup>
-                    <col class="twenty" />
-                    <col class="fourty" />
-                    <col class="thirtyfive" />
-                    <col class="twentyfive" />
+                    <col class="twenty"/>
+                    <col class="fourty"/>
+                    <col class="thirtyfive"/>
+                    <col class="twentyfive"/>
                 </colgroup>
+                <thead>
                 <tr>
-                    <th onclick="sortTable(0)"><span class="glyphicon glyphicon-sort"></span>课程号</th>
-                    <th onclick="sortTable(1)"><span class="glyphicon glyphicon-sort"></span>课程名</th>
-                    <th onclick="sortTable(2)"><span class="glyphicon glyphicon-sort"></span>授课教师</th>
-                    <th onclick="sortTable(3)"><span class="glyphicon glyphicon-sort"></span>教室</th>
+                    <th id="selected"></th>
+                    <th id="course-id"><span class="glyphicon glyphicon-sort"></span>课程号</th>
+                    <th id="course-sub-id">课序号</th>
+                    <th id="course-name"><span class="glyphicon glyphicon-sort"></span>课程名</th>
+                    <th id="teacher"><span class="glyphicon glyphicon-sort"></span>授课教师</th>
+                    <th id="classroom"><span class="glyphicon glyphicon-sort"></span>教室</th>
                 </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
             </table>
         </div>
     </div>

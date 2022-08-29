@@ -19,19 +19,37 @@ function searchCourse() {
         let courseList = totalResponse['list']['records']
         console.log(courseList)
         return courseList
-    }).then(courseList=>{
+    }).then(courseList => {
+        // 先清除原来的课程表
+        document.querySelector('tbody').innerHTML = ''
         buildForm(courseList)
     })
 }
 
 function buildForm(json) {
-    let table = document.getElementById('gable');
-    json.forEach(function (object) {
+    let table = document.querySelector('#course-info tbody')
+    json.forEach(function (course, index) {
         let tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + object.kch + '</td>' +
-            '<td>' + object.kcm + '</td>' +
-            '<td>' + object.skjs + '</td>' +
-            '<td>' + object.jasm + '</td>';
+        tr.setAttribute('id', 'course-' + index)
+
+        let checkbox = document.createElement('input')
+        checkbox.setAttribute('type', 'checkbox')
+        tr.appendChild(checkbox)
+
+        tr.innerHTML +=
+            '<td>' + course['kch'] + '</td>' +
+            '<td>' + course['kxh'] + '</td>' +
+            '<td>' + course['kcm'] + '</td>' +
+            '<td>' + course['skjs'] + '</td>' +
+            '<td>' + course['jasm'] + '</td>';
         table.appendChild(tr);
     });
 }
+
+document.querySelector('#course-info tbody').addEventListener('click', (ev) => {
+    console.log('点击事件');
+    console.log(ev.target.parentNode);
+    let row = ev.target.parentNode
+    row.setAttribute('class', 'selected')
+    row.querySelector('input').setAttribute('checked', true)
+})
