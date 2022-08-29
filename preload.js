@@ -33,9 +33,9 @@ let indexBridge = {
      *
      * @param conditionMap 保存条件和值的Map对象
      */
-    searchCourse: async (conditionMap)=>{
+    searchCourse: async (conditionMap) => {
         let search_string = '';
-        conditionMap.forEach((value)=>{
+        conditionMap.forEach((value) => {
             search_string += value + ' '
         });
         let searchPayload = {
@@ -44,7 +44,7 @@ let indexBridge = {
             "jc": 0,
             "kclbdm": ""
         }
-        let response = await ipcRenderer.invoke('search_course',searchPayload)
+        let response = await ipcRenderer.invoke('search_course', searchPayload)
     }
 }
 
