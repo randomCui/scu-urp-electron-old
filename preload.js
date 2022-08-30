@@ -77,7 +77,9 @@ let autoTakerBridge = {
         return await ipcRenderer.invoke('is_course_selection_time')
     },
     addSelectedCourses: async (course) => {
-        console.log(course)
+        // console.log(course);
+        // 传递包含课程对象的列表
+        ipcRenderer.send('addSelectedCourses',course);
     }
 }
 

@@ -7,7 +7,7 @@ let mainWindow
 function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
-        width: 800,
+        width: 1600,
         height: 600,
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
@@ -139,7 +139,7 @@ ipcMain.handle('search_course_alt', async (event, payload) => {
             body: new URLSearchParams(payload),
         })
     }).then(response => {
-        console.log(response)
+        // console.log(response)
         return response.text()
     })
 })
@@ -147,4 +147,19 @@ ipcMain.handle('search_course_alt', async (event, payload) => {
 ipcMain.handle('is_course_selection_time', async () => {
     const {is_course_selection_time} = require('./src/js/course_taker')
     return await is_course_selection_time(JSESSIONID)
+})
+
+const {DesiredCourse} = require('src/js/course_taker')
+ipcMain.on('addSelectedCourses',(event,courses)=>{
+    let courseSet = new Set()
+    for(let course of courses){
+        let temp = new DesiredCourse(
+            course['kch'],
+            course['kxh'],
+            course['zxjxjhh'],
+            course['kcm'],
+            course['fajhh'],
+            // course['token'],   测试服务器里面没有返回这个信息
+        )
+    }
 })
