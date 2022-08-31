@@ -37,7 +37,7 @@ function buildForm(json) {
 
         let checkbox = document.createElement('input')
         checkbox.setAttribute('type', 'checkbox')
-        checkbox.setAttribute('onClick','return false')
+        checkbox.setAttribute('onClick', 'return false')
         tr.appendChild(checkbox)
 
         tr.innerHTML +=
@@ -72,7 +72,11 @@ document.getElementById('add-course').addEventListener('click', () => {
             // window.autoTakerBridge.addSelectedCourses(course);
         }
     }
-    window.autoTakerBridge.addSelectedCourses(courses);
+    // window.autoTakerBridge.addSelectedCourses(courses);
+    window.autoTakerBridge.addCourse(JSON.stringify(courses)).then((response) => {
+        console.log(response)
+        console.log(JSON.parse(response))
+    });
 })
 
 function selectFromList(ID, subID) {

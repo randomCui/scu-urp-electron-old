@@ -43,9 +43,6 @@ class DesiredCourse {
             'tokenValue': this.token,
         }
     }
-    addCourse(course) {
-
-    }
 }
 
 class CourseScheduler {
@@ -57,7 +54,8 @@ class CourseScheduler {
         this.cookie = cookie
         this.interval = 1000
         this.pendingList = [new DesiredCourse(1, 1, 1, 1, 1, 1)]
-        this.keepSeeking = true
+        this.keepSeeking = true;
+        this.searchContext = [];
     }
 
     async start() {
@@ -72,11 +70,11 @@ class CourseScheduler {
                     body: course.postPayload,
                 }).then(/*do something*/)
             }
-            await setTimeout(console.log, this.interval, '完成一轮选课')
+            setTimeout(console.log, this.interval, '完成一轮选课')
         }
     }
 
-    async searchCourseAlt (payload){
+    async searchCourseAlt(payload) {
         const {zhjwjs_url, zhjwjs_search_url} = require('../test/test_config');
         return await fetch(zhjwjs_url).then(response => {
             return response.headers.get('set-cookie').split(';')[0];
@@ -91,27 +89,58 @@ class CourseScheduler {
             })
         }).then(response => {
             // console.log(response)
-           return response.text();
-        }).then(text =>{
+            return response.text();
+        }).then(text => {
             this.searchContext = JSON.parse(text)['list']['records'];
             return text;
         })
     }
 
     addCourse(course) {
-        this.pendingList.push(course)
+        let matchingCourse = this.findMatchingCourse(course);
+        // console.log(matchingCourse);
+        if (matchingCourse) {
+            this.pendingList.push(matchingCourse);
+            return {
+                'code': '1',
+                'message': course['kcm'] + '已成功添加'
+            }
+        } else {
+            return {
+                'code': -1,
+                'message': course['kcm'] + '添加失败'
+            }
+        }
     }
 
-    deleteCourse(ID) {
-        let index = this.pendingList.findIndex((value, index) => {
-            if(value.ID === ID)
-                return index
+    deleteCourse(course) {
+        let index = this.findMatchingCourseIndex(course);
+        console.log(index);
+        this.pendingList.splice(index, 1);
+        console.log(this.pendingList)
+    }
+
+    findMatchingCourse(course) {
+        // 应该是要从searchContext里面找到课程
+        return this.searchContext.find((oriCourseInfo) => {
+            let flag = true;
+            for (let [key, value] of Object.entries(course)) {
+                if (value !== oriCourseInfo[key])
+                    flag = false;
+            }
+            return flag
         })
-        this.pendingList.splice(index, 1)
     }
 
-    findMatchCourse(course) {
-
+    findMatchingCourseIndex(course) {
+        return this.pendingList.findIndex((storedCourse) => {
+            let flag = true;
+            for (let [key, value] of Object.entries(course)) {
+                if (value !== storedCourse[key])
+                    flag = false;
+            }
+            return flag
+        })
     }
 }
 

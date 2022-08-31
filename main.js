@@ -137,9 +137,8 @@ ipcMain.handle('is_course_selection_time', async () => {
     return await is_course_selection_time(JSESSIONID)
 })
 
-ipcMain.on('addSelectedCourses',(event,courses)=>{
-    let courseSet = new Set()
-    for(let course of courses){
+ipcMain.on('addSelectedCourses', (event, courses) => {
+    for (let course of courses) {
         let temp = new DesiredCourse(
             course['kch'],
             course['kxh'],
@@ -151,23 +150,30 @@ ipcMain.on('addSelectedCourses',(event,courses)=>{
     }
 })
 
-ipcMain.handle('addCourse',(event,jsonString)=>{
+ipcMain.handle('addCourse', async (event, jsonString) => {
     /*********************
      * 这里应该传入的是这样一个Json
      * [
      *   {课程信息},
-     *   {课程信息},
+     *   {'kch':...,
+     *    'kxh':...,
+     *    'zxjxjhh:...,
+     *    'kcm':...,
+     *    'js':...,
+     *    },
      * ]
      */
     let courses = JSON.parse(jsonString);
-    for (let course of courses){
-        globalCourseScheduler.addCourse(course)
+    let status = [];
+    for (let course of courses) {
+        status.push(globalCourseScheduler.addCourse(course));
     }
-
+    console.log(status);
+    return JSON.stringify(status);
 })
 
-ipcMain.on('initCourseSelection', ()=>{
-    if (globalCourseScheduler === null){
+ipcMain.on('initCourseSelection', () => {
+    if (globalCourseScheduler === null) {
         globalCourseScheduler = new CourseScheduler(JSESSIONID);
     }
 })

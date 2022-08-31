@@ -79,15 +79,16 @@ let autoTakerBridge = {
     addSelectedCourses: async (course) => {
         // console.log(course);
         // 传递包含课程对象的列表
-        ipcRenderer.send('addSelectedCourses',course);
+        ipcRenderer.send('addSelectedCourses', course);
     },
     /********
      * 添加指定的课程到课表中
      * @param jsonString 保存了课程号(ID)，课序号(subID)，学期(semester)，授课教师(teacher)的Json字符串
      * @returns {Promise<void>} 指示每个课程操作状态的Json对象字符串
      */
-    addCourse: async (jsonString)=>{
-        ipcRenderer.invoke('addCourse',jsonString).then((operationStatus)=>{
+    addCourse: async (jsonString) => {
+        return ipcRenderer.invoke('addCourse', jsonString).then((operationStatus) => {
+            // console.log(operationStatus)
             return operationStatus;
         })
     },
@@ -96,15 +97,15 @@ let autoTakerBridge = {
      * @param jsonString 保存了课程号(ID)，课序号(subID)，学期(semester)，授课教师(teacher)的Json字符串
      * @returns {Promise<void>} 指示每个课程操作状态的Json对象字符串
      */
-    deleteCourse: async (jsonString)=>{
-        ipcRenderer.invoke('deleteCourse',jsonString).then((operationStatus)=>{
+    deleteCourse: async (jsonString) => {
+        ipcRenderer.invoke('deleteCourse', jsonString).then((operationStatus) => {
             return operationStatus;
         })
     },
     /*********
      * 在node环境中初始化一个CourseScheduler实例
      */
-    initCourseSelection: ()=>{
+    initCourseSelection: () => {
         ipcRenderer.send('initCourseSelection');
     }
 }
