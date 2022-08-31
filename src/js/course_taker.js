@@ -51,9 +51,9 @@ class CourseScheduler {
      * @param cookie 我寻思教务处维持登录态应该只用这一个cookie
      */
     constructor(cookie) {
-        this.cookie = cookie
-        this.interval = 1000
-        this.pendingList = [new DesiredCourse(1, 1, 1, 1, 1, 1)]
+        this.cookie = cookie;
+        this.interval = 1000;
+        this.pendingList = [];
         this.keepSeeking = true;
         this.searchContext = [];
     }
@@ -99,23 +99,29 @@ class CourseScheduler {
     addCourse(course) {
         let matchingCourse = this.findMatchingCourse(course);
         // console.log(matchingCourse);
+        if (!matchingCourse) {
+            return {
+                'code': -2,
+                'message': '未在搜索结果中找到对应课程:' + course['kcm']
+            }
+        }
         if (this.isDuplicatedCourse(matchingCourse) !== -1) {
             return {
                 'code': -1,
                 'message': course['kcm'] + '已存在重复课程，添加失败'
             }
         }
-        if (matchingCourse) {
-            this.pendingList.push(matchingCourse);
-            return {
-                'code': '1',
-                'message': course['kcm'] + '已成功添加'
-            }
-        } else {
-            return {
-                'code': -1,
-                'message': course['kcm'] + '添加失败'
-            }
+        this.pendingList.push(new DesiredCourse(
+            course['kch'],
+            course['kxh'],
+            course['zxjxjhh'],
+            course['kcm'],
+            course['fajhh'],
+            course['token'],
+        ));
+        return {
+            'code': 1,
+            'message': course['kcm'] + '已成功添加'
         }
     }
 
@@ -151,6 +157,10 @@ class CourseScheduler {
 
     isDuplicatedCourse(course) {
         return this.findMatchingCourseIndex(course);
+    }
+
+    updateCookie(cookie) {
+        this.cookie = cookie;
     }
 }
 
