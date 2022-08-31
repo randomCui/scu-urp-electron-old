@@ -50,6 +50,9 @@ const {ipcMain} = require('electron');
 const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('./src/js/config');
 let {JSESSIONID, isLogin} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const {DesiredCourse, CourseScheduler} = require('./src/js/course_taker');
+
+let globalCourseScheduler = new CourseScheduler(null);
 
 ipcMain.handle('init_urp_login', async () => {
     // electron的ipc不能直接返回blob,因此这里返回arrayBuffer后再在渲染进程中组装成blob
@@ -119,29 +122,14 @@ ipcMain.handle('search_course', (event, payload) => {
     }).then(response => {
         return response.text()
     }).then(text => {
-        let totalResponse = JSON.parse(text)
-        let courseList = JSON.parse(totalResponse['rwRxkZlList'])
-        return courseList
+        let totalResponse = JSON.parse(text);
+        let courseList = JSON.parse(totalResponse['rwRxkZlList']);
+        return courseList;
     });
 })
 
 ipcMain.handle('search_course_alt', async (event, payload) => {
-    const {zhjwjs_url, zhjwjs_search_url} = require('./test/test_config');
-    return await fetch(zhjwjs_url).then(response => {
-        return response.headers.get('set-cookie').split(';')[0];
-    }).then(cookie => {
-        return fetch(zhjwjs_search_url, {
-            method: 'POST',
-            headers: {
-                'User-Agent': http_head,
-                'cookie': cookie,
-            },
-            body: new URLSearchParams(payload),
-        })
-    }).then(response => {
-        // console.log(response)
-        return response.text()
-    })
+    return globalCourseScheduler.searchCourseAlt(payload)
 })
 
 ipcMain.handle('is_course_selection_time', async () => {
@@ -149,7 +137,6 @@ ipcMain.handle('is_course_selection_time', async () => {
     return await is_course_selection_time(JSESSIONID)
 })
 
-const {DesiredCourse} = require('src/js/course_taker')
 ipcMain.on('addSelectedCourses',(event,courses)=>{
     let courseSet = new Set()
     for(let course of courses){
@@ -161,5 +148,26 @@ ipcMain.on('addSelectedCourses',(event,courses)=>{
             course['fajhh'],
             // course['token'],   测试服务器里面没有返回这个信息
         )
+    }
+})
+
+ipcMain.handle('addCourse',(event,jsonString)=>{
+    /*********************
+     * 这里应该传入的是这样一个Json
+     * [
+     *   {课程信息},
+     *   {课程信息},
+     * ]
+     */
+    let courses = JSON.parse(jsonString);
+    for (let course of courses){
+        globalCourseScheduler.addCourse(course)
+    }
+
+})
+
+ipcMain.on('initCourseSelection', ()=>{
+    if (globalCourseScheduler === null){
+        globalCourseScheduler = new CourseScheduler(JSESSIONID);
     }
 })

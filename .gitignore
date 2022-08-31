@@ -3,4 +3,4 @@ package-lock.json
 README_ori.md
 LICENSE.md
 .idea
-test
+src/test

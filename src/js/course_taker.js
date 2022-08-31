@@ -43,6 +43,9 @@ class DesiredCourse {
             'tokenValue': this.token,
         }
     }
+    addCourse(course) {
+
+    }
 }
 
 class CourseScheduler {
@@ -53,7 +56,7 @@ class CourseScheduler {
     constructor(cookie) {
         this.cookie = cookie
         this.interval = 1000
-        this.pendingList = [new desireCourse(1, 1, 1, 1, 1, 1)]
+        this.pendingList = [new DesiredCourse(1, 1, 1, 1, 1, 1)]
         this.keepSeeking = true
     }
 
@@ -73,16 +76,42 @@ class CourseScheduler {
         }
     }
 
+    async searchCourseAlt (payload){
+        const {zhjwjs_url, zhjwjs_search_url} = require('../test/test_config');
+        return await fetch(zhjwjs_url).then(response => {
+            return response.headers.get('set-cookie').split(';')[0];
+        }).then(cookie => {
+            return fetch(zhjwjs_search_url, {
+                method: 'POST',
+                headers: {
+                    'User-Agent': http_head,
+                    'cookie': cookie,
+                },
+                body: new URLSearchParams(payload),
+            })
+        }).then(response => {
+            // console.log(response)
+           return response.text();
+        }).then(text =>{
+            this.searchContext = JSON.parse(text)['list']['records'];
+            return text;
+        })
+    }
+
     addCourse(course) {
         this.pendingList.push(course)
     }
 
-    delCourse(ID) {
+    deleteCourse(ID) {
         let index = this.pendingList.findIndex((value, index) => {
             if(value.ID === ID)
                 return index
         })
         this.pendingList.splice(index, 1)
+    }
+
+    findMatchCourse(course) {
+
     }
 }
 
