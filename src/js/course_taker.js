@@ -99,6 +99,12 @@ class CourseScheduler {
     addCourse(course) {
         let matchingCourse = this.findMatchingCourse(course);
         // console.log(matchingCourse);
+        if (this.isDuplicatedCourse(matchingCourse) !== -1) {
+            return {
+                'code': -1,
+                'message': course['kcm'] + '已存在重复课程，添加失败'
+            }
+        }
         if (matchingCourse) {
             this.pendingList.push(matchingCourse);
             return {
@@ -141,6 +147,10 @@ class CourseScheduler {
             }
             return flag
         })
+    }
+
+    isDuplicatedCourse(course) {
+        return this.findMatchingCourseIndex(course);
     }
 }
 

@@ -74,7 +74,6 @@ document.getElementById('add-course').addEventListener('click', () => {
     }
     // window.autoTakerBridge.addSelectedCourses(courses);
     window.autoTakerBridge.addCourse(JSON.stringify(courses)).then((response) => {
-        console.log(response)
         console.log(JSON.parse(response))
     });
 })
