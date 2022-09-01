@@ -3,9 +3,18 @@ document.addEventListener('DOMContentLoaded',()=>{
         let pendingList = JSON.parse(pendingListJsonString);
         buildTable(pendingList);
     })
-})
+});
+
+document.getElementById('launch-all').addEventListener('click',()=>{
+    window.courseControlBridge.startAll();
+});
+
+document.getElementById('stop-all').addEventListener('click',()=>{
+    window.courseControlBridge.stopAll();
+});
 
 function buildTable(pendingList) {
+    document.querySelector('table').innerHTML = ''
     let table = document.querySelector('#pending-list-viewer')
     pendingList.forEach(function (course, index) {
         let tr = document.createElement('tr');
@@ -21,7 +30,19 @@ function buildTable(pendingList) {
             '<td>' + course['kxh'] + '</td>' +
             '<td>' + course['kcm'] + '</td>' +
             '<td>' + course['skjs'] + '</td>' +
-            '<td>' + course['jasm'] + '</td>';
+            '<td>' + course['jasm'] + '</td>' +
+            '<td>' + course['status'] + '</td>' +
+            '<td>' + course['enable'] + '</td>';
         table.appendChild(tr);
     });
 }
+
+
+window.setInterval(()=>{
+    window.courseControlBridge.getPendingList().then(pendingListJsonString=>{
+        let pendingList = JSON.parse(pendingListJsonString);
+        buildTable(pendingList);
+    })
+},200)
+
+

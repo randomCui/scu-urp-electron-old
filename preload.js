@@ -115,6 +115,12 @@ let courseControlBridge = {
         return ipcRenderer.invoke('getPendingList').then(pendingListJsonString => {
             return pendingListJsonString;
         })
+    },
+    startAll: () => {
+        ipcRenderer.send('startAll');
+    },
+    stopAll: () => {
+        ipcRenderer.send('stopAll');
     }
 }
 

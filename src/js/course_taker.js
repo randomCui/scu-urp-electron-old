@@ -22,6 +22,14 @@ class DesiredCourse {
         for (let [key, value] of Object.entries(rest)) {
             this[key] = value;
         }
+        this.triedTimes = 0;
+        this.lastSubmitStartTime = undefined;
+        this.lastSubmitFinishTime = undefined;
+        // pending(等待选课返回结果), finish(结果已返回，等待下次提交) 两种状态
+        this.status = 'pausing';
+        // 是否开启抢课功能
+        this.enable = 'false';
+
     }
 
     /***************
@@ -54,6 +62,49 @@ class DesiredCourse {
             'tokenValue': this.token,
         }
     }
+
+    updateStatus(occasion) {
+        console.log(occasion);
+        if (occasion === 'beforeSubmit') {
+            this.triedTimes += 1;
+            this.status = 'pending';
+            this.lastSubmitStartTime = Date.now();
+        } else if (occasion === 'afterSubmit') {
+            this.lastSubmitFinishTime = Date.now();
+            this.status = 'finish';
+        } else if (occasion === 'success') {
+            this.lastSubmitFinishTime = Date.now();
+            this.enable = false;
+            this.status = 'success';
+        }
+    }
+
+    isEnable() {
+        return this.enable;
+    }
+
+    setEnableStatus(status) {
+        this.enable = status;
+    }
+
+    toJSON(){
+        let translateMap = new Map(
+            Object.entries({
+                'ID': 'kch',
+                'subID': 'kxh',
+                'semester': 'zxjxjhh',
+                'name': 'kcm',
+            })
+        );
+        let json = {};
+        for (let [key, value] of Object.entries(this)) {
+            if (key === 'postPayload')
+                continue;
+            let newKey = translateMap.get(key) || key;
+            json[newKey] = value;
+        }
+        return json;
+    }
 }
 
 class CourseScheduler {
@@ -70,8 +121,11 @@ class CourseScheduler {
     }
 
     async start() {
-        while (this.keepSeeking) {
-            for (let course of this.pendingList) {
+        for (let course of this.pendingList) {
+            if (course.isEnable()) {
+
+                course.updateStatus('beforeSubmit')
+
                 fetch(course_select_submit_url, {
                     method: 'POST',
                     headers: {
@@ -79,10 +133,32 @@ class CourseScheduler {
                         'User-Agent': http_head,
                     },
                     body: course.postPayload,
-                }).then(/*do something*/)
+                }).then(response => {
+                    return response.text();
+                }).then(text => {
+                    if (text.includes('ok')) {
+                        course.updateStatus('success')
+                    }else{
+                        course.updateStatus('failed')
+                    }
+                    return {}
+                })
             }
-            setTimeout(console.log, this.interval, '完成一轮选课')
         }
+        setTimeout(console.log, this.interval, '完成一轮选课')
+    }
+
+    async startAll() {
+        this.pendingList.forEach(task => {
+            task.setEnableStatus(true);
+        });
+        await this.start();
+    }
+
+    async stopAll() {
+        this.pendingList.forEach(task => {
+            task.setEnableStatus(false);
+        });
     }
 
     async searchCourseAlt(payload) {
@@ -178,16 +254,9 @@ class CourseScheduler {
         );
         let jsonList = []
         this.pendingList.forEach(course => {
-            let json = {};
-            for (let [key, value] of Object.entries(course)) {
-                if (key === 'postPayload')
-                    continue;
-                let newKey = translateMap.get(key) || key;
-                json[newKey] = value;
-            }
-            jsonList.push(json)
+            jsonList.push(course.toJSON())
         })
-        console.log(this.pendingList);
+        // console.log(jsonList);
         return jsonList;
     }
 }

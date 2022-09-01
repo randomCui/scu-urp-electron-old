@@ -182,3 +182,11 @@ ipcMain.handle('getPendingList', ()=>{
     // console.log(globalCourseScheduler.getPendingListJson());
     return JSON.stringify(globalCourseScheduler.getPendingListJson());
 })
+
+ipcMain.on('startAll', ()=>{
+    globalCourseScheduler.startAll();
+})
+
+ipcMain.on('stopAll', ()=>{
+    globalCourseScheduler.stopAll();
+})

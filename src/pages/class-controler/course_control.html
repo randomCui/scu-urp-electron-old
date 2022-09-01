@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <title>四川大学urp教务助手 - Electron Build</title>
     <link href="../styles.css" rel="stylesheet">
-    <script src="course_control.js"></script>
 </head>
 <body>
 <div>
@@ -18,12 +17,16 @@
     </div>
     <div class="content-wrapper">
         <div class="content">
+            <input type="button" id="launch-all" value="全部开始">
+            <input type="button" id="stop-all" value="全部结束">
+            <input type="button" id="refresh" value="刷新">
             <table id="pending-list-viewer">
 
             </table>
         </div>
     </div>
 </div>
+<script src="./course_control.js"></script>
 
 </body>
 </html>
