@@ -177,3 +177,8 @@ ipcMain.on('initCourseSelection', () => {
         globalCourseScheduler = new CourseScheduler(JSESSIONID);
     }
 })
+
+ipcMain.handle('getPendingList', ()=>{
+    console.log(globalCourseScheduler.getPendingListJson());
+    return JSON.stringify(globalCourseScheduler.getPendingListJson());
+})

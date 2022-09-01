@@ -110,6 +110,15 @@ let autoTakerBridge = {
     }
 }
 
+let courseControlBridge = {
+    getPendingList: () => {
+        return ipcRenderer.invoke('getPendingList').then(pendingListJsonString => {
+            return pendingListJsonString;
+        })
+    }
+}
+
 
 contextBridge.exposeInMainWorld("indexBridge", indexBridge);
 contextBridge.exposeInMainWorld('autoTakerBridge', autoTakerBridge);
+contextBridge.exposeInMainWorld('courseControlBridge', courseControlBridge);

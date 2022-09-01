@@ -3,7 +3,7 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const {course_select_submit_url, http_head} = require('./config')
 
 class DesiredCourse {
-    constructor(ID, subID, semester, name, programPlanNumber, token) {
+    constructor(ID, subID, semester, name, programPlanNumber, token, teacher) {
         this.ID = ID;
         this.subID = subID;
         this.semester = semester;
@@ -162,17 +162,29 @@ class CourseScheduler {
     updateCookie(cookie) {
         this.cookie = cookie;
     }
-}
 
-
-class CourseSelector {
-    searchCourse(option) {
-
+    getPendingListJson() {
+        let translateMap = new Map(
+            Object.entries({
+                'ID': 'kch',
+                'subID': 'kxh',
+                'semester': 'zxjxjhh',
+                'name': 'kcm',
+            })
+        );
+        let jsonList = []
+        this.pendingList.forEach(course=>{
+            let json = {};
+            for(let [key,value] of Object.entries(course)){
+                if (key === 'postPayload')
+                    continue;
+                let newKey = translateMap.get(key) || key;
+                json[newKey] = value;
+            }
+            jsonList.push(json)
+        })
+        return jsonList;
     }
-}
-
-class CourseShowContainer {
-
 }
 
 /**********
@@ -198,7 +210,6 @@ async function is_course_selection_time(cookie) {
 
 module.exports = {
     CourseScheduler,
-    CourseSelector,
     DesiredCourse,
     is_course_selection_time,
 }
