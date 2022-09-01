@@ -3,7 +3,15 @@ const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch
 const {course_select_submit_url, http_head} = require('./config')
 
 class DesiredCourse {
-    constructor(ID, subID, semester, name, programPlanNumber, token, teacher) {
+    constructor({
+                    'kch': ID,
+                    'kxh': subID,
+                    'kcm': name,
+                    'zxjxjhh': semester,
+                    'fajhh': programPlanNumber,
+                    'token': token,
+                    ...rest
+                }) {
         this.ID = ID;
         this.subID = subID;
         this.semester = semester;
@@ -11,6 +19,9 @@ class DesiredCourse {
         this.programPlanNumber = programPlanNumber;
         this.token = token;
         this.postPayload = this.makePost()
+        for (let [key, value] of Object.entries(rest)) {
+            this[key] = value;
+        }
     }
 
     /***************
@@ -111,14 +122,7 @@ class CourseScheduler {
                 'message': course['kcm'] + '已存在重复课程，添加失败'
             }
         }
-        this.pendingList.push(new DesiredCourse(
-            course['kch'],
-            course['kxh'],
-            course['zxjxjhh'],
-            course['kcm'],
-            course['fajhh'],
-            course['token'],
-        ));
+        this.pendingList.push(new DesiredCourse(course));
         return {
             'code': 1,
             'message': course['kcm'] + '已成功添加'
@@ -173,9 +177,9 @@ class CourseScheduler {
             })
         );
         let jsonList = []
-        this.pendingList.forEach(course=>{
+        this.pendingList.forEach(course => {
             let json = {};
-            for(let [key,value] of Object.entries(course)){
+            for (let [key, value] of Object.entries(course)) {
                 if (key === 'postPayload')
                     continue;
                 let newKey = translateMap.get(key) || key;
@@ -183,6 +187,7 @@ class CourseScheduler {
             }
             jsonList.push(json)
         })
+        console.log(this.pendingList);
         return jsonList;
     }
 }

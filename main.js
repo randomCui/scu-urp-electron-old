@@ -179,6 +179,6 @@ ipcMain.on('initCourseSelection', () => {
 })
 
 ipcMain.handle('getPendingList', ()=>{
-    console.log(globalCourseScheduler.getPendingListJson());
+    // console.log(globalCourseScheduler.getPendingListJson());
     return JSON.stringify(globalCourseScheduler.getPendingListJson());
 })
