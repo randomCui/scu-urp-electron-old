@@ -1,6 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
-const {course_select_submit_url, http_head} = require('./config')
+const {course_select_submit_url, http_head} = require('./config');
 
 class DesiredCourse {
     constructor({
@@ -122,7 +122,6 @@ class DesiredCourse {
             }).then(text => {
                 if (text.includes('ok')) {
                     this.updateStatus('success')
-                    break;
                 } else {
                     this.updateStatus('failed')
                 }
@@ -132,10 +131,6 @@ class DesiredCourse {
 }
 
 class CourseScheduler {
-    /*************
-     *
-     * @param cookie 我寻思教务处维持登录态应该只用这一个cookie
-     */
     constructor(cookie) {
         this.cookie = cookie;
         this.interval = 1000;
@@ -247,14 +242,6 @@ class CourseScheduler {
     }
 
     getPendingListJson() {
-        let translateMap = new Map(
-            Object.entries({
-                'ID': 'kch',
-                'subID': 'kxh',
-                'semester': 'zxjxjhh',
-                'name': 'kcm',
-            })
-        );
         let jsonList = []
         this.pendingList.forEach(course => {
             jsonList.push(course.toJSON())
