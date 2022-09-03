@@ -13,6 +13,8 @@ const course_select_search_url = "http://zhjw.scu.edu.cn/student/courseSelect/fr
 // 教务系统自由选课页面
 const course_select_entry_url = 'http://zhjw.scu.edu.cn/student/courseSelect/courseSelect/index'
 
+const curriculum_query_url = 'http://zhjw.scu.edu.cn/student/courseSelect/thisSemesterCurriculum/7992K9sk3g/ajaxStudentSchedule/curr/callback'
+
 const http_head = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.163 Safari/535.1";
 
 let JSESSIONID = '';
@@ -29,4 +31,5 @@ module.exports = {
     http_head,
     JSESSIONID,
     isLogin,
+    curriculum_query_url
 }

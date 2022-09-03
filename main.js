@@ -178,15 +178,19 @@ ipcMain.on('initCourseSelection', () => {
     }
 })
 
-ipcMain.handle('getPendingList', ()=>{
+ipcMain.handle('getExistingCurriculum', () => {
+
+})
+
+ipcMain.handle('getPendingList', () => {
     // console.log(globalCourseScheduler.getPendingListJson());
     return JSON.stringify(globalCourseScheduler.getPendingListJson());
 })
 
-ipcMain.on('startAll', ()=>{
+ipcMain.on('startAll', () => {
     globalCourseScheduler.startAll();
 })
 
-ipcMain.on('stopAll', ()=>{
+ipcMain.on('stopAll', () => {
     globalCourseScheduler.stopAll();
 })
