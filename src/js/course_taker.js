@@ -87,7 +87,7 @@ class DesiredCourse {
         this.enable = status;
     }
 
-    toJSON(){
+    toJSON() {
         let translateMap = new Map(
             Object.entries({
                 'ID': 'kch',
@@ -104,6 +104,30 @@ class DesiredCourse {
             json[newKey] = value;
         }
         return json;
+    }
+
+    async startQuery(cookie) {
+        while (this.isEnable()) {
+            this.updateStatus('beforeSubmit')
+
+            await fetch(course_select_submit_url, {
+                method: 'POST',
+                headers: {
+                    'Cookie': cookie,
+                    'User-Agent': http_head,
+                },
+                body: this.postPayload,
+            }).then(response => {
+                return response.text();
+            }).then(text => {
+                if (text.includes('ok')) {
+                    this.updateStatus('success')
+                    break;
+                } else {
+                    this.updateStatus('failed')
+                }
+            })
+        }
     }
 }
 
@@ -122,30 +146,8 @@ class CourseScheduler {
 
     async start() {
         for (let course of this.pendingList) {
-            if (course.isEnable()) {
-
-                course.updateStatus('beforeSubmit')
-
-                fetch(course_select_submit_url, {
-                    method: 'POST',
-                    headers: {
-                        'Cookie': this.cookie,
-                        'User-Agent': http_head,
-                    },
-                    body: course.postPayload,
-                }).then(response => {
-                    return response.text();
-                }).then(text => {
-                    if (text.includes('ok')) {
-                        course.updateStatus('success')
-                    }else{
-                        course.updateStatus('failed')
-                    }
-                    return {}
-                })
-            }
+            course.startQuery(this.cookie);
         }
-        setTimeout(console.log, this.interval, '完成一轮选课')
     }
 
     async startAll() {
@@ -159,6 +161,7 @@ class CourseScheduler {
         this.pendingList.forEach(task => {
             task.setEnableStatus(false);
         });
+
     }
 
     async searchCourseAlt(payload) {
