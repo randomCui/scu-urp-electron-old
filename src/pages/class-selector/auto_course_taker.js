@@ -9,6 +9,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
+document.addEventListener('DOMContentLoaded', async () => {
+    window.autoTakerBridge.getExistingCurriculum();
+})
+
 let courseJson;
 
 function searchCourse() {

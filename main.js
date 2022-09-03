@@ -1,6 +1,7 @@
 // Modules to control application life and create native browser window
+
 const {app, BrowserWindow} = require('electron');
-const path = require('path');
+const path = require('path');  // eslint-disable-line
 
 let mainWindow
 
@@ -51,8 +52,10 @@ const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('.
 let {JSESSIONID, isLogin} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const {DesiredCourse, CourseScheduler} = require('./src/js/course_taker');
+const {Curriculum} = require('./src/js/courseSchedule');
 
-let globalCourseScheduler = new CourseScheduler(null);
+let globalCourseScheduler = new CourseScheduler();
+let globalCurriculum = new Curriculum();
 
 ipcMain.handle('init_urp_login', async () => {
     // electron的ipc不能直接返回blob,因此这里返回arrayBuffer后再在渲染进程中组装成blob
@@ -66,6 +69,10 @@ ipcMain.handle('init_urp_login', async () => {
         return response.headers.get('set-cookie').split(';')[0];  // eslint-disable-line
     }).then(cookie => {
         JSESSIONID = cookie
+
+        globalCurriculum.updateCookie(cookie);
+        globalCourseScheduler.updateCookie(cookie);
+
         return fetch(jwc_captcha_url, {
             headers: {
                 'Cookie': cookie,
@@ -137,18 +144,18 @@ ipcMain.handle('is_course_selection_time', async () => {
     return await is_course_selection_time(JSESSIONID)
 })
 
-ipcMain.on('addSelectedCourses', (event, courses) => {
-    for (let course of courses) {
-        let temp = new DesiredCourse(
-            course['kch'],
-            course['kxh'],
-            course['zxjxjhh'],
-            course['kcm'],
-            course['fajhh'],
-            // course['token'],   测试服务器里面没有返回这个信息
-        )
-    }
-})
+// ipcMain.on('addSelectedCourses', (event, courses) => {
+//     for (let course of courses) {
+//         let temp = new DesiredCourse(
+//             course['kch'],
+//             course['kxh'],
+//             course['zxjxjhh'],
+//             course['kcm'],
+//             course['fajhh'],
+//             // course['token'],   测试服务器里面没有返回这个信息
+//         )
+//     }
+// })
 
 ipcMain.handle('addCourse', async (event, jsonString) => {
     /*********************
@@ -179,7 +186,7 @@ ipcMain.on('initCourseSelection', () => {
 })
 
 ipcMain.handle('getExistingCurriculum', () => {
-
+    globalCurriculum.getExistingCourseCurriculum();
 })
 
 ipcMain.handle('getPendingList', () => {

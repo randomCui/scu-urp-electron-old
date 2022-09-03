@@ -108,7 +108,7 @@ let autoTakerBridge = {
     initCourseSelection: () => {
         ipcRenderer.send('initCourseSelection');
     },
-    getExistingCourseSchedule: () => {
+    getExistingCurriculum: () => {
         ipcRenderer.invoke('getExistingCurriculum').then(jsonString => {
             return jsonString;
         })
