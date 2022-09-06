@@ -115,7 +115,7 @@ function buildCurriculum(courseList) {
     for(let i=0;i<coursePerDay;i++) {
         let tr = document.createElement('tr');
         for (let j = 0; j < HTMLByDayColumn.length; j++) {
-            if(!HTMLByDayColumn[j]['masked'][0][i]){
+            if(!HTMLByDayColumn[j]['masked'][0].shift()){
                 tr.appendChild(HTMLByDayColumn[j]['filled'][0].shift())
             }
         }
@@ -164,6 +164,7 @@ function arrangeCourseBlock(courseList) {
             courseColumn.push(td);
         }
         let j = 0;
+        let offset = 0;
         for (let course of courseList) {
             // 如果要覆盖的位置全部没有被占据
             if (isOccupied.slice(course.classSessions - 1, course.classSessions + course.continuingSession - 1).every(value => value === false)) {
@@ -177,7 +178,8 @@ function arrangeCourseBlock(courseList) {
                 let courseHTML = document.createElement('td');
                 courseHTML.setAttribute('rowspan', course.continuingSession);
                 courseHTML.innerText = course.name + '\n' + course.teacher;
-                courseColumn.splice(course.classSessions - 1, course.continuingSession, courseHTML);
+                courseColumn.splice(course.classSessions - 1-offset, course.continuingSession,courseHTML);
+                offset+=course.continuingSession-1;
             }
             j++
         }
