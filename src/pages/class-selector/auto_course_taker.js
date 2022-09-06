@@ -13,6 +13,7 @@ let curriculumJson;
 
 document.addEventListener('DOMContentLoaded', async () => {
     curriculumJson = JSON.parse(await window.autoTakerBridge.getExistingCurriculum());
+    buildCurriculum(curriculumJson);
 })
 
 let courseJson;
@@ -91,6 +92,102 @@ function selectFromList(ID, subID) {
     })
 }
 
-function buildCurriculum(courseList){
+function buildCurriculum(courseList) {
     let curriculumTable = document.querySelector('#curriculum')
+    // 对课程列表按照时间段进行排序
+    courseList.sort((a, b) => {
+        if (a.classDay - b.classDay !== 0) {
+            return a.classDay - b.classDay;
+        } else if (a.classSessions - b.classSessions !== 0) {
+            return a.classSessions - b.classSessions;
+        } else if (a.ID - b.ID !== 0) {
+            return a.ID - b.ID;
+        } else {
+            return a.subID - b.subID;
+        }
+    })
+    let courseByClassDay = splitCurriculumByClassDay(courseList);
+    let HTMLByDayColumn = [];
+    for (let day of Object.values(courseByClassDay)) {
+        HTMLByDayColumn.push(arrangeCourseBlock(day));
+    }
+    console.log(HTMLByDayColumn);
+    for(let i=0;i<coursePerDay;i++) {
+        let tr = document.createElement('tr');
+        for (let j = 0; j < HTMLByDayColumn.length; j++) {
+            if(!HTMLByDayColumn[j]['masked'][0][i]){
+                tr.appendChild(HTMLByDayColumn[j]['filled'][0].shift())
+            }
+        }
+        curriculumTable.appendChild(tr);
+    }
+
+}
+
+function splitCurriculumByClassDay(courseList) {
+    let containerByWeekDay = {};
+    courseList.forEach(course => {
+        if (!Object.hasOwn(course, course.classDay)) {
+            containerByWeekDay[course.classDay] = [];
+        }
+    })
+    courseList.forEach(course => {
+        containerByWeekDay[course.classDay].push(course);
+    })
+    return containerByWeekDay
+}
+
+/**********
+ * 返回HTML的表格数据
+ *
+ * @param courseList 分割出的每天的课程列表
+ */
+
+const coursePerDay = 12;
+
+function arrangeCourseBlock(courseList) {
+    let isArranged = []
+    for (let i = 0; i < courseList.length; i++) {
+        isArranged.push(false);
+    }
+    let tableFill = [];  // 每一行代表表格中的一列
+    let tableMask = [];
+    while (!isArranged.every(value => value === true)) {
+        let courseColumn = [];
+        let columnMask = [];
+        let isOccupied = [];
+        for (let i = 0; i < coursePerDay; i++) {
+            isOccupied.push(false);
+            columnMask.push(false);
+            let td = document.createElement('td');
+            td.innerHTML = '&nbsp;';
+            courseColumn.push(td);
+        }
+        let j = 0;
+        for (let course of courseList) {
+            // 如果要覆盖的位置全部没有被占据
+            if (isOccupied.slice(course.classSessions - 1, course.classSessions + course.continuingSession - 1).every(value => value === false)) {
+                for (let i = 0; i < course.continuingSession; i++) {
+                    isOccupied.splice(course.classSessions - 1 + i, 1, true);
+                }
+                for (let i=0;i<course.continuingSession-1;i++){
+                    columnMask.splice(course.classSessions+i,1,true);
+                }
+                isArranged[j] = true;
+                let courseHTML = document.createElement('td');
+                courseHTML.setAttribute('rowspan', course.continuingSession);
+                courseHTML.innerText = course.name + '\n' + course.teacher;
+                courseColumn.splice(course.classSessions - 1, course.continuingSession, courseHTML);
+            }
+            j++
+        }
+        tableFill.push(courseColumn);
+        tableMask.push(columnMask);
+    }
+    // console.log(tableFill);
+    // console.log(tableMask);
+    return {
+        'filled': tableFill,
+        'masked': tableMask,
+    };
 }

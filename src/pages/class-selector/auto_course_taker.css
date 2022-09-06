@@ -27,3 +27,7 @@ table {
 tr.selected {
     background: lightcyan;
 }
+td {
+    border-collapse: collapse;
+    border: 1px solid lightgray;
+}

@@ -43,7 +43,8 @@ class CurriculumClass {
     constructor(
         {
             'attendClassTeacher': teacher,
-            'courseCategoryName': name,
+            'courseCategoryName': categoryName,
+            'courseName': name,
             'id': {
                 'coureNumber': ID,
                 'coureSequenceNumber': subID
@@ -67,6 +68,7 @@ class CurriculumClass {
         this.ID = ID;
         this.subID = subID;
         this.name = name;
+        this.categoryName = categoryName;
         this.semester = semester;
         this.teacher = teacher;
         this.campus = campus;
