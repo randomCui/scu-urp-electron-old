@@ -2,7 +2,7 @@
     display: block;
 }
 
-tr {
+tr.search-row {
     text-align: center;
     min-width: 60px;
     max-width: 400px;
@@ -10,7 +10,7 @@ tr {
 
 }
 
-tr:hover {
+tr.search-row:hover {
     background: lightgray;
 }
 
@@ -25,9 +25,26 @@ table {
 }
 
 tr.selected {
+    text-align: center;
+    min-width: 60px;
+    max-width: 400px;
+    border-bottom: 1px solid lightgray;
     background: lightcyan;
 }
-td {
+
+tr.curriculum-row{
     border-collapse: collapse;
     border: 1px solid lightgray;
+    text-align: center;
+}
+
+td.curriculum-row{
+    border-collapse: collapse;
+    border: 1px solid lightgray;
+}
+
+td.curriculum-row:hover {
+    border-collapse: collapse;
+    border: 1px solid lightgray;
+    background: lightgray;
 }

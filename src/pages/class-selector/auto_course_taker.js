@@ -41,6 +41,7 @@ function buildForm(json) {
     json.forEach(function (course, index) {
         let tr = document.createElement('tr');
         tr.setAttribute('id', 'course-' + index)
+        tr.setAttribute('class','search-row')
 
         let checkbox = document.createElement('input')
         checkbox.setAttribute('type', 'checkbox')
@@ -60,7 +61,7 @@ function buildForm(json) {
 document.querySelector('#course-info tbody').addEventListener('click', (ev) => {
     let row = ev.target.parentNode;
     if (row.getAttribute('class')?.includes('selected')) {
-        row.setAttribute('class', '')
+        row.setAttribute('class', 'search-row')
         row.querySelector('input').removeAttribute('checked')
     } else {
         row.setAttribute('class', 'selected')
@@ -114,6 +115,7 @@ function buildCurriculum(courseList) {
     console.log(HTMLByDayColumn);
     for(let i=0;i<coursePerDay;i++) {
         let tr = document.createElement('tr');
+        tr.setAttribute('class','curriculum-row')
         for (let j = 0; j < HTMLByDayColumn.length; j++) {
             if(!HTMLByDayColumn[j]['masked'][0].shift()){
                 tr.appendChild(HTMLByDayColumn[j]['filled'][0].shift())
@@ -160,6 +162,7 @@ function arrangeCourseBlock(courseList) {
             isOccupied.push(false);
             columnMask.push(false);
             let td = document.createElement('td');
+            td.setAttribute('class','curriculum-row')
             td.innerHTML = '&nbsp;';
             courseColumn.push(td);
         }
@@ -177,6 +180,7 @@ function arrangeCourseBlock(courseList) {
                 isArranged[j] = true;
                 let courseHTML = document.createElement('td');
                 courseHTML.setAttribute('rowspan', course.continuingSession);
+                courseHTML.setAttribute('class','curriculum-row')
                 courseHTML.innerText = course.name + '\n' + course.teacher;
                 courseColumn.splice(course.classSessions - 1-offset, course.continuingSession,courseHTML);
                 offset+=course.continuingSession-1;
