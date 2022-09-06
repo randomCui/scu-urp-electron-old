@@ -225,10 +225,12 @@ class CourseScheduler {
     findMatchingCourseIndex(course) {
         return this.pendingList.findIndex((storedCourse) => {
             let flag = true;
-            for (let [key, value] of Object.entries(course)) {
-                if (value !== storedCourse[key])
-                    flag = false;
-            }
+            if (course['kch'] !== storedCourse.ID ||
+                course['kxh'] !== storedCourse.subID ||
+                course['zxjxjhh'] !== storedCourse.semester ||
+                course['kcm'] !== storedCourse.name)
+                flag = false;
+
             return flag
         })
     }
