@@ -9,8 +9,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 })
 
+let curriculumJson;
+
 document.addEventListener('DOMContentLoaded', async () => {
-    window.autoTakerBridge.getExistingCurriculum();
+    curriculumJson = JSON.parse(await window.autoTakerBridge.getExistingCurriculum());
 })
 
 let courseJson;
@@ -87,4 +89,8 @@ function selectFromList(ID, subID) {
         if (value['kch'] === ID && value['kxh'] === subID)
             return true
     })
+}
+
+function buildCurriculum(courseList){
+    let curriculumTable = document.querySelector('#curriculum')
 }

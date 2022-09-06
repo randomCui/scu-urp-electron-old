@@ -20,6 +20,8 @@ th {
 
 table {
     border-collapse: collapse;
+    display: block;
+    float: left;
 }
 
 tr.selected {

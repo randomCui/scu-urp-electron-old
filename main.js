@@ -185,8 +185,11 @@ ipcMain.on('initCourseSelection', () => {
     }
 })
 
-ipcMain.handle('getExistingCurriculum', () => {
-    globalCurriculum.getExistingCourseCurriculum();
+ipcMain.handle('getExistingCurriculum', async () => {
+    return await globalCurriculum.getExistingCourseCurriculum().then(curriculum => {
+        // console.log(JSON.stringify(curriculum))
+        return JSON.stringify(curriculum);
+    })
 })
 
 ipcMain.handle('getPendingList', () => {

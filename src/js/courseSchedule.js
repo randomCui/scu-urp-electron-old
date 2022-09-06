@@ -9,11 +9,17 @@ class Curriculum {
     }
 
     async getExistingCourseCurriculum() {
-        console.log(this.cookie+'; selectionBar=82022');
+        await this.updateCurriculumFromJWC();
+        console.log(this.courseList)
+        return this.courseList
+    }
+
+    async updateCurriculumFromJWC() {
+        this.courseList = [];
         await fetch(curriculum_query_url, {
             method: 'get',
             headers: {
-                'Cookie': this.cookie+'; selectionBar=82022',
+                'Cookie': this.cookie + '; selectionBar=82022',
                 'User-Agent': http_head,
             },
             body: null,
@@ -22,14 +28,13 @@ class Curriculum {
         }).then(json => {
             this.totalCourseCount = json['allUnits'];
             // console.log(json['xkxx'])
-            for (let course of Object.values(json['xkxx'][0])) {
+            for (let course of Object.values(json['dateList'][0]["selectCourseList"])) {
                 this.courseList.push(new CurriculumClass(course))
             }
         })
-        console.log(this.courseList)
     }
 
-    updateCookie(cookie){
+    updateCookie(cookie) {
         this.cookie = cookie;
     }
 }
@@ -44,15 +49,18 @@ class CurriculumClass {
                 'coureSequenceNumber': subID
             },
             'timeAndPlaceList': {
-                'executiveEducationPlanNumber': semester,
-                'campusName': campus,
-                classDay,
-                classSessions,
-                'classWeek': classWeekMask,
-                continuingSession,
-                classroomName,
-                teachingBuildingName,
-                weekDescription
+                '0': {
+                    'executiveEducationPlanNumber': semester,
+                    'campusName': campus,
+                    classDay,
+                    classSessions,
+                    'classWeek': classWeekMask,
+                    continuingSession,
+                    classroomName,
+                    teachingBuildingName,
+                    weekDescription
+                },
+
             }
         }
     ) {
