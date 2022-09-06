@@ -85,12 +85,12 @@ ipcMain.handle('init_urp_login', async () => {
     })
 })
 
-ipcMain.on('urp_login', async (event, post_data) => {
+ipcMain.handle('urp_login', async (event, post_data) => {
     const md5 = require('md5')
     post_data['j_password'] = md5(post_data['j_password'])
     console.log(post_data)
     console.log(JSESSIONID)
-    fetch(jwc_jc, {
+    return await fetch(jwc_jc, {
         method: 'POST',
         headers: {
             'Accept-Language': 'zh-CN,zh;q=0.9',
@@ -103,10 +103,18 @@ ipcMain.on('urp_login', async (event, post_data) => {
         if (response.url === jwc_home) {
             console.log('登陆成功');
             isLogin = true;
+            return {
+                'status': 'success',
+                'message': '登陆成功'
+            };
         } else {
             let url = new URL(response.url);
             let errorCode = url.searchParams.get('errorCode');
             console.log('登陆失败' + errorCode)
+            return {
+                'status': 'failed',
+                'message': '登陆失败' + errorCode,
+            }
         }
     })
 })

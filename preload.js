@@ -24,7 +24,9 @@ let indexBridge = {
             "j_password": password,
             "j_captcha": captcha,
         }
-        await ipcRenderer.send('urp_login', post_data)
+        return await ipcRenderer.invoke('urp_login', post_data).then(result => {
+            return result;
+        })
     },
     check_login_state: async () => {
         return await ipcRenderer.invoke('check_login_state',)
