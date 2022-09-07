@@ -56,6 +56,8 @@ const {Curriculum} = require('./src/js/courseSchedule');
 
 let globalCourseScheduler = new CourseScheduler();
 let globalCurriculum = new Curriculum();
+let tokenValue;
+let globalCookie;
 
 ipcMain.handle('init_urp_login', async () => {
     // electron的ipc不能直接返回blob,因此这里返回arrayBuffer后再在渲染进程中组装成blob
@@ -66,16 +68,19 @@ ipcMain.handle('init_urp_login', async () => {
     }).then(response => {
         // console.log(response)
         console.log(response.headers.get('set-cookie').split(';')[0])
-        return response.headers.get('set-cookie').split(';')[0];  // eslint-disable-line
-    }).then(cookie => {
-        JSESSIONID = cookie
+        JSESSIONID = response.headers.get('set-cookie').split(';')[0];
+        globalCookie = response.headers.get('set-cookie').split(';')[0];
+        return response.text()
+    }).then(text => {
+        let regexp = /id="tokenValue" name="tokenValue" value="(.*?)"/ium
+        tokenValue = text.match(regexp)[1];
 
-        globalCurriculum.updateCookie(cookie);
-        globalCourseScheduler.updateCookie(cookie);
+        globalCurriculum.updateCookie(globalCookie);
+        globalCourseScheduler.updateCookie(globalCookie);
 
         return fetch(jwc_captcha_url, {
             headers: {
-                'Cookie': cookie,
+                'Cookie': globalCookie,
                 'User-Agent': http_head,
             },
         })
@@ -88,6 +93,9 @@ ipcMain.handle('init_urp_login', async () => {
 ipcMain.handle('urp_login', async (event, post_data) => {
     const md5 = require('md5')
     post_data['j_password'] = md5(post_data['j_password'])
+    if (tokenValue) {
+        post_data['tokenValue'] = tokenValue;
+    }
     console.log(post_data)
     console.log(JSESSIONID)
     return await fetch(jwc_jc, {
