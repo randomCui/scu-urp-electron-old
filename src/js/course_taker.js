@@ -29,7 +29,8 @@ class DesiredCourse {
         this.status = 'pausing';
         // 是否开启抢课功能
         this.enable = 'false';
-
+        this.interval = 1000;
+        this.intervalID = null;
     }
 
     /***************
@@ -76,6 +77,9 @@ class DesiredCourse {
             this.lastSubmitFinishTime = Date.now();
             this.enable = false;
             this.status = 'success';
+        } else if (occasion === 'pause') {
+            this.enable = false;
+            this.status = 'pause'
         }
     }
 
@@ -106,10 +110,9 @@ class DesiredCourse {
         return json;
     }
 
-    async startQuery(cookie) {
-        while (this.isEnable()) {
+    startQuery(cookie) {
+        this.intervalID = setInterval(async () => {
             this.updateStatus('beforeSubmit')
-
             await fetch(course_select_submit_url, {
                 method: 'POST',
                 headers: {
@@ -126,14 +129,18 @@ class DesiredCourse {
                     this.updateStatus('failed')
                 }
             })
-        }
+        }, this.interval);
     }
+
+    stopQuery() {
+        clearInterval(this.intervalID);
+    }
+
 }
 
 class CourseScheduler {
     constructor(cookie) {
         this.cookie = cookie;
-        this.interval = 1000;
         this.pendingList = [];
         this.keepSeeking = true;
         this.searchContext = [];
@@ -154,7 +161,9 @@ class CourseScheduler {
 
     async stopAll() {
         this.pendingList.forEach(task => {
-            task.setEnableStatus(false);
+            // task.setEnableStatus(false);
+            task.updateStatus('pause');
+            task.stopQuery();
         });
 
     }
