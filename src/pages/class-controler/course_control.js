@@ -1,21 +1,21 @@
-document.addEventListener('DOMContentLoaded',()=>{
-    window.courseControlBridge.getPendingList().then(pendingListJsonString=>{
+document.addEventListener('DOMContentLoaded', () => {
+    window.courseControlBridge.getPendingList().then(pendingListJsonString => {
         let pendingList = JSON.parse(pendingListJsonString);
         buildTable(pendingList);
     })
 });
 
-document.getElementById('launch-all').addEventListener('click',()=>{
+document.getElementById('launch-all').addEventListener('click', () => {
     window.courseControlBridge.startAll();
 });
 
-document.getElementById('stop-all').addEventListener('click',()=>{
+document.getElementById('stop-all').addEventListener('click', () => {
     window.courseControlBridge.stopAll();
 });
 
 function buildTable(pendingList) {
-    document.querySelector('table').innerHTML = ''
-    let table = document.querySelector('#pending-list-viewer')
+    document.querySelector('table tbody').innerHTML = '';
+    let table = document.querySelector('#pending-list-viewer tbody')
     pendingList.forEach(function (course, index) {
         let tr = document.createElement('tr');
         tr.setAttribute('id', 'course-' + index)
@@ -38,11 +38,11 @@ function buildTable(pendingList) {
 }
 
 
-window.setInterval(()=>{
-    window.courseControlBridge.getPendingList().then(pendingListJsonString=>{
+window.setInterval(() => {
+    window.courseControlBridge.getPendingList().then(pendingListJsonString => {
         let pendingList = JSON.parse(pendingListJsonString);
         buildTable(pendingList);
     })
-},200)
+}, 200)
 
 
