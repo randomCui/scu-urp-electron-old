@@ -10,7 +10,7 @@ class Curriculum {
 
     async getExistingCourseCurriculum() {
         await this.updateCurriculumFromJWC();
-        console.log(this.courseList)
+        // console.log(this.courseList)
         return this.courseList
     }
 
