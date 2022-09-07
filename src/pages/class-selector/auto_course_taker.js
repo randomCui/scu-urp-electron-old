@@ -41,7 +41,7 @@ function buildForm(json) {
     json.forEach(function (course, index) {
         let tr = document.createElement('tr');
         tr.setAttribute('id', 'course-' + index)
-        tr.setAttribute('class','search-row')
+        tr.setAttribute('class', 'search-row')
 
         let checkbox = document.createElement('input')
         checkbox.setAttribute('type', 'checkbox')
@@ -109,15 +109,21 @@ function buildCurriculum(courseList) {
     })
     let courseByClassDay = splitCurriculumByClassDay(courseList);
     let HTMLByDayColumn = [];
+    for (let i = 0; i < 7; i++) {
+        if (!Object.hasOwn(courseByClassDay, i)) {
+            courseByClassDay[i] = [];
+        }
+    }
+
     for (let day of Object.values(courseByClassDay)) {
         HTMLByDayColumn.push(arrangeCourseBlock(day));
     }
-    console.log(HTMLByDayColumn);
-    for(let i=0;i<coursePerDay;i++) {
+    // console.log(HTMLByDayColumn);
+    for (let i = 0; i < coursePerDay; i++) {
         let tr = document.createElement('tr');
-        tr.setAttribute('class','curriculum-row')
+        tr.setAttribute('class', 'curriculum-row')
         for (let j = 0; j < HTMLByDayColumn.length; j++) {
-            if(!HTMLByDayColumn[j]['masked'][0].shift()){
+            if (!HTMLByDayColumn[j]['masked'][0].shift()) {
                 tr.appendChild(HTMLByDayColumn[j]['filled'][0].shift())
             }
         }
@@ -154,7 +160,7 @@ function arrangeCourseBlock(courseList) {
     }
     let tableFill = [];  // 每一行代表表格中的一列
     let tableMask = [];
-    while (!isArranged.every(value => value === true)) {
+    do {
         let courseColumn = [];
         let columnMask = [];
         let isOccupied = [];
@@ -162,7 +168,7 @@ function arrangeCourseBlock(courseList) {
             isOccupied.push(false);
             columnMask.push(false);
             let td = document.createElement('td');
-            td.setAttribute('class','curriculum-row')
+            td.setAttribute('class', 'curriculum-row')
             td.innerHTML = '&nbsp;';
             courseColumn.push(td);
         }
@@ -174,22 +180,22 @@ function arrangeCourseBlock(courseList) {
                 for (let i = 0; i < course.continuingSession; i++) {
                     isOccupied.splice(course.classSessions - 1 + i, 1, true);
                 }
-                for (let i=0;i<course.continuingSession-1;i++){
-                    columnMask.splice(course.classSessions+i,1,true);
+                for (let i = 0; i < course.continuingSession - 1; i++) {
+                    columnMask.splice(course.classSessions + i, 1, true);
                 }
                 isArranged[j] = true;
                 let courseHTML = document.createElement('td');
                 courseHTML.setAttribute('rowspan', course.continuingSession);
-                courseHTML.setAttribute('class','curriculum-row')
+                courseHTML.setAttribute('class', 'curriculum-row')
                 courseHTML.innerText = course.name + '\n' + course.teacher;
-                courseColumn.splice(course.classSessions - 1-offset, course.continuingSession,courseHTML);
-                offset+=course.continuingSession-1;
+                courseColumn.splice(course.classSessions - 1 - offset, course.continuingSession, courseHTML);
+                offset += course.continuingSession - 1;
             }
             j++
         }
         tableFill.push(courseColumn);
         tableMask.push(columnMask);
-    }
+    } while (!isArranged.every(value => value === true))
     // console.log(tableFill);
     // console.log(tableMask);
     return {

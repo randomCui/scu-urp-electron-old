@@ -32,19 +32,49 @@ tr.selected {
     background: lightcyan;
 }
 
+.curriculum-wrapper{
+    max-width: 40%;
+    position: fixed;
+    top:10%;
+    right: 0;
+    padding: 1em;
+    border-bottom: 1px solid black;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    background: white;
+}
+
 tr.curriculum-row{
     border-collapse: collapse;
     border: 1px solid lightgray;
     text-align: center;
+    max-width: 18%;
+    min-width: 15%;
 }
 
 td.curriculum-row{
     border-collapse: collapse;
     border: 1px solid lightgray;
+    max-width: 18vw;
+    min-width: 3em;
+    word-break:break-all;
 }
 
 td.curriculum-row:hover {
     border-collapse: collapse;
     border: 1px solid lightgray;
     background: lightgray;
+}
+
+#class-search-form{
+    display: block;
+}
+
+#add-course-wrapper{
+    display: block;
+    float: top;
+}
+
+#course-info{
+    display: block;
 }
