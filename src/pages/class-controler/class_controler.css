@@ -4,6 +4,7 @@ ul.pending-list-viewer {
 }
 
 ul.pending-list-viewer > li {
+    border-left: 1em solid transparent;
     margin-bottom: 0.5em;
 }
 
@@ -28,4 +29,16 @@ ul.pending-list-viewer > li > div.clear {
 ul.pending-list-viewer > li > div > div > span {
     /*border-left: 1em;*/
     margin-left: 1em;
+    white-space: nowrap;
+}
+
+ul.pending-list-viewer > li > div{
+    /*border-left: 1em;*/
+    width:8em;
+    overflow: hidden;
+}
+
+ul.pending-list-viewer > li > div:first-child{
+    /*border-left: 1em;*/
+    width: 15em;
 }

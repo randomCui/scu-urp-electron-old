@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     window.courseControlBridge.getPendingList().then(pendingListJsonString => {
         let pendingList = JSON.parse(pendingListJsonString);
-        buildList(pendingList);
+        updateList(pendingList);
     })
 });
 
@@ -59,12 +59,12 @@ function buildList(pendingList) {
         let divRight = document.createElement('div');
         divRight.setAttribute('style', 'float: right; margin-left: 4em;');
         divRight.innerHTML +=
-            '<div>' + '已尝试' + course['triedTimes'] + '次' +'</div>' +
+            '<div>' + '已尝试' + course['triedTimes'] + '次' + '</div>' +
             '<div>' + '上次用时' + ((course['lastSubmitFinishTime'] - course['lastSubmitStartTime']) / 1000) + 's' + '</div>' +
             '<div>' + '总用时' + ((course['lastSubmitFinishTime'] - course['firstStartTime']) / 1000) + 's' + '</div>'
 
         let divClear = document.createElement('div');
-        divClear.setAttribute('class','clear');
+        divClear.setAttribute('class', 'clear');
 
         li.appendChild(divLeft);
         li.appendChild(divRight);
@@ -74,24 +74,122 @@ function buildList(pendingList) {
     });
 }
 
+function updateList(courseList) {
+    let ul = document.querySelector('ul.pending-list-viewer');
+    let liList = ul.children;
+    courseList.forEach(course => {
+        let li = undefined;
+        for (let temp of liList) {
+            if (temp.getAttribute('id') === course['kch'] + '-' + course['kxh'] + course['zxjxjhh']) {
+                li = temp;
+                break;
+            }
+        }
+        if (li !== undefined) {
+            updateInfo(li,course);
+        } else {
+            ul.appendChild(makeNewRow(course));
+        }
+    })
+}
+
+function updateInfo(li,course){
+    let temp = li.querySelectorAll('div div')
+    temp[7].innerText = '已尝试' + course['triedTimes'] + '次';
+    temp[5].innerText = '轮询定时' + course['interval']/1000 + 's';
+    temp[4].innerText = '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's';
+    temp[8].innerText = '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's';
+    li.querySelector('div b').innerText = translateStatus(course['status']);
+}
+
+function calcTimeDelta(endTime,startTime){
+    if(isNaN(endTime-startTime))
+        return '--'
+    else
+        return (endTime-startTime)/1000
+}
+
+function translateStatus(status){
+    if(status==='success')
+        return '已成功'
+    if(status==='pending')
+        return '等待响应'
+    if(status==='pause')
+        return '暂停中'
+    if(status==='finish')
+        return '等待下一次轮询'
+}
+
+function fillInfo(li, course) {
+    li.innerHTML = '';
+    let divLeft = document.createElement('div');
+    divLeft.setAttribute('style', 'float: left')
+    divLeft.innerHTML =
+        '<div>' +
+        '<span>' + course['kcm'].slice(0,14) + '</span>' +
+        '<span>' + course['skjs'].slice(0,7) + '</span>' +
+        '</div>' +
+        '<div>' +
+        '<span>' + course['type'] + '</span>' +
+        '<span>' + course['kch'] + '</span>' +
+        '<span>' + course['kxh'] + '</span>' +
+        '</div>'
+
+    let divCenter = document.createElement('div');
+    divCenter.setAttribute('style', 'float: left; margin-left: 4em;');
+    divCenter.innerHTML =
+        '<div>' + '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's' + '</div>' +
+        '<div>' + '轮询定时' + course['internal']/1000 + 's' + '</div>'+
+        '<input style="display: inline; width: 6em" type="text">'
+
+    let divRight = document.createElement('div');
+    divRight.setAttribute('style', 'float: left; margin-left: 4em;');
+    divRight.innerHTML =
+        '<b class="statu-indicator">'+translateStatus(course['status'])+'</b>'+
+        '<div>' + '已尝试' + course['triedTimes'] + '次' + '</div>' +
+        '<div>' + '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's' + '</div>'
+
+    let divClear = document.createElement('div');
+    divClear.setAttribute('class', 'clear');
+
+    li.appendChild(divLeft);
+    li.appendChild(divCenter);
+    li.appendChild(divRight);
+    li.appendChild(divClear);
+}
+
+function makeNewRow(course) {
+    let li = document.createElement('li');
+    li.setAttribute('id', course['kch'] + '-' + course['kxh'] + course['zxjxjhh'])
+    fillInfo(li, course);
+    li.addEventListener('click',ev=>{
+        if (li.getAttribute('class')?.includes('selected')) {
+            li.setAttribute('class', '')
+        } else {
+            li.setAttribute('class', 'selected')
+            console.log(li)
+        }
+    });
+    return li;
+}
 
 window.setInterval(() => {
     window.courseControlBridge.getPendingList().then(pendingListJsonString => {
         let pendingList = JSON.parse(pendingListJsonString);
-        buildList(pendingList);
+        updateList(pendingList);
     })
+
 }, 200)
 
-document.querySelector('ul.pending-list-viewer li').addEventListener('click',(ev)=>{
-    let row = ev.target;
-    if (row.getAttribute('class')?.includes('selected')) {
-        row.setAttribute('class', 'search-row')
-        row.querySelector('input').removeAttribute('checked')
-    } else {
-        row.setAttribute('class', 'selected')
-        row.querySelector('input').setAttribute('checked', 'true')
-        console.log(row)
-    }
-})
+
+// document.querySelector('ul.pending-list-viewer').addEventListener('click', (ev) => {
+//     let row = ev.target;
+//     if (row.getAttribute('class')?.includes('selected')) {
+//         row.setAttribute('class', '')
+//     } else {
+//         row.setAttribute('class', 'selected')
+//         console.log(row)
+//     }
+// },true)
 
 

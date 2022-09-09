@@ -27,11 +27,12 @@ class DesiredCourse {
         this.lastSubmitFinishTime = undefined;
         this.firstStartTime = undefined;
         // pending(等待选课返回结果), finish(结果已返回，等待下次提交) 两种状态
-        this.status = 'pausing';
+        this.status = 'pause';
         // 是否开启抢课功能
         this.enable = 'false';
-        this.interval = 5000;
+        this.interval = 1000;
         this.intervalID = null;
+        this.forceStop = false;
     }
 
     /***************
@@ -122,8 +123,15 @@ class DesiredCourse {
     startQuery(cookie) {
         const {test_submit_url} = require('../test/test_config')
         this.cookie = cookie;
+
+        if (this.status === 'success')
+            return;
+
         this.firstStartTime = Date.now();
         this.intervalID = setInterval(async () => {
+            // 说明上一次的轮询还没有结束
+            if(this.status==='pending')
+                return;
             this.updateStatus('beforeSubmit')
             // 正式应使用course_select_submit_url
             await fetch(test_submit_url, {
@@ -140,7 +148,12 @@ class DesiredCourse {
                 if (text.includes('ok')) {
                     this.updateStatus('success')
                 } else {
-                    this.updateStatus('afterSubmit')
+                    if(this.forceStop) {
+                        this.updateStatus('pause')
+                        this.forceStop = false;
+                    }else {
+                        this.updateStatus('afterSubmit')
+                    }
                 }
             })
         }, this.interval);
@@ -148,6 +161,7 @@ class DesiredCourse {
 
     stopQuery() {
         clearInterval(this.intervalID);
+        this.forceStop = true;
     }
 
     changeInterval(interval) {
@@ -184,7 +198,6 @@ class CourseScheduler {
     async stopAll() {
         this.pendingList.forEach(task => {
             // task.setEnableStatus(false);
-            task.updateStatus('pause');
             task.stopQuery();
         });
 
