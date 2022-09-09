@@ -78,3 +78,7 @@ td.curriculum-row:hover {
 #course-info{
     display: block;
 }
+
+.curriculum-row-head{
+    min-width: 4em;
+}

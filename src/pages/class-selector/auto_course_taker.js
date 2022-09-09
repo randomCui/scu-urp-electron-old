@@ -121,6 +121,10 @@ function buildCurriculum(courseList) {
     // console.log(HTMLByDayColumn);
     for (let i = 0; i < coursePerDay; i++) {
         let tr = document.createElement('tr');
+        let rowHead = document.createElement('td');
+        rowHead.innerText = '第' + (i+1) + '节';
+        rowHead.setAttribute('class','curriculum-row-head');
+        tr.appendChild(rowHead)
         tr.setAttribute('class', 'curriculum-row')
         for (let j = 0; j < HTMLByDayColumn.length; j++) {
             if (!HTMLByDayColumn[j]['masked'][0].shift()) {
@@ -202,4 +206,7 @@ function arrangeCourseBlock(courseList) {
         'filled': tableFill,
         'masked': tableMask,
     };
+}
+function toggleTractAction(){
+
 }
