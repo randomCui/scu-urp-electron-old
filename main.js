@@ -209,8 +209,10 @@ ipcMain.handle('getExistingCurriculum', async () => {
 })
 
 ipcMain.handle('getPendingList', () => {
-    // console.log(globalCourseScheduler.getPendingListJson());
-    return JSON.stringify(globalCourseScheduler.getPendingListJson());
+    // console.log(globalCourseScheduler.getPendingListJson())
+    return JSON.stringify(globalCourseScheduler.getPendingListJson(),(key, value)=>{
+        return (key==='intervalID'?undefined:value)
+    });
 })
 
 ipcMain.on('startAll', () => {

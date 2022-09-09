@@ -48,12 +48,19 @@ class DesiredCourse {
      * @returns {{kcIds: string, inputcode: string, fajhh, sj: string, searchtj, kclbdm: string, dealType: number, kcms: string, tokenValue}}
      */
     makePost() {
-        let make_kcms = () => {
+        let make_kcIDs = () => {
             return [this.ID, this.subID, this.semester].join('@')
+        }
+        let make_kcms = () => {
+            let convertedString = '';
+            for (let char of this.name) {
+                convertedString += char.charCodeAt(0).toString(10) + ',';
+            }
+            return convertedString;
         }
         return {
             'dealType': 5,
-            'kcIds': this.ID + "@" + this.subID + "@" + this.semester,
+            'kcIds': make_kcIDs(),
             'kcms': make_kcms(),
             'fajhh': this.programPlanNumber,
             'sj': '0_0',
@@ -77,6 +84,7 @@ class DesiredCourse {
             this.lastSubmitFinishTime = Date.now();
             this.enable = false;
             this.status = 'success';
+            clearInterval(this.intervalID);
         } else if (occasion === 'pause') {
             this.enable = false;
             this.status = 'pause'
@@ -111,15 +119,18 @@ class DesiredCourse {
     }
 
     startQuery(cookie) {
+        const {test_submit_url} = require('../test/test_config')
         this.intervalID = setInterval(async () => {
             this.updateStatus('beforeSubmit')
-            await fetch(course_select_submit_url, {
+            // 正式应使用course_select_submit_url
+            await fetch(test_submit_url, {
                 method: 'POST',
                 headers: {
                     'Cookie': cookie,
                     'User-Agent': http_head,
+                    'Content-Type': 'application/json'
                 },
-                body: this.postPayload,
+                body: JSON.stringify(this.postPayload),
             }).then(response => {
                 return response.text();
             }).then(text => {
