@@ -31,7 +31,7 @@ class DesiredCourse {
         // 是否开启抢课功能
         this.enable = 'false';
         this.interval = 1000;
-        this.intervalID = null;
+        this.timeoutID = null;
         this.forceStop = false;
     }
 
@@ -78,18 +78,19 @@ class DesiredCourse {
             this.triedTimes += 1;
             this.status = 'pending';
             this.lastSubmitStartTime = Date.now();
+
         } else if (occasion === 'afterSubmit') {
             this.lastSubmitFinishTime = Date.now();
             this.status = 'finish';
+
         } else if (occasion === 'success') {
             this.lastSubmitFinishTime = Date.now();
             this.enable = false;
             this.status = 'success';
-            clearInterval(this.intervalID);
+
         } else if (occasion === 'pause') {
             this.enable = false;
             this.status = 'pause'
-            clearInterval(this.intervalID);
         }
     }
 
@@ -114,6 +115,8 @@ class DesiredCourse {
         for (let [key, value] of Object.entries(this)) {
             if (key === 'postPayload')
                 continue;
+            if (key === 'timeoutID')
+                continue;
             let newKey = translateMap.get(key) || key;
             json[newKey] = value;
         }
@@ -121,46 +124,80 @@ class DesiredCourse {
     }
 
     startQuery(cookie) {
-        const {test_submit_url} = require('../test/test_config')
         this.cookie = cookie;
-
         if (this.status === 'success')
             return;
-
         this.firstStartTime = Date.now();
-        this.intervalID = setInterval(async () => {
-            // 说明上一次的轮询还没有结束
-            if(this.status==='pending')
-                return;
-            this.updateStatus('beforeSubmit')
-            // 正式应使用course_select_submit_url
-            await fetch(test_submit_url, {
-                method: 'POST',
-                headers: {
-                    'Cookie': cookie,
-                    'User-Agent': http_head,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(this.postPayload),
-            }).then(response => {
-                return response.text();
-            }).then(text => {
-                if (text.includes('ok')) {
-                    this.updateStatus('success')
-                } else {
-                    if(this.forceStop) {
-                        this.updateStatus('pause')
-                        this.forceStop = false;
-                    }else {
-                        this.updateStatus('afterSubmit')
-                    }
-                }
-            })
-        }, this.interval);
+        let that = this;
+        this.timeoutID = setTimeout(this.start.bind(this), that.interval);
+
     }
 
+    async start() {
+        const {test_submit_url} = require('../test/test_config')
+        if (this.status === 'pending')
+            return;
+        this.updateStatus('beforeSubmit')
+        // 正式应使用course_select_submit_url
+        await fetch(test_submit_url, {
+            method: 'POST',
+            headers: {
+                'Cookie': this.cookie,
+                'User-Agent': http_head,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.postPayload),
+        }).then(response => {
+            return response.text();
+        }).then(text => {
+            if (text.includes('ok')) {
+                this.updateStatus('success');
+                return;
+            } else {
+                if (this.forceStop) {
+                    this.updateStatus('pause');
+                    this.forceStop = false;
+                    return;
+                } else {
+                    this.updateStatus('afterSubmit');
+                }
+            }
+            let that = this;
+            this.timeoutID = setTimeout(this.start.bind(this), that.interval);
+        })
+    }
+
+    // this.intervalID = setInterval(async () => {
+    //     // 说明上一次的轮询还没有结束
+    //     if(this.status==='pending')
+    //         return;
+    //     this.updateStatus('beforeSubmit')
+    //     // 正式应使用course_select_submit_url
+    //     await fetch(test_submit_url, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Cookie': cookie,
+    //             'User-Agent': http_head,
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(this.postPayload),
+    //     }).then(response => {
+    //         return response.text();
+    //     }).then(text => {
+    //         if (text.includes('ok')) {
+    //             this.updateStatus('success')
+    //         } else {
+    //             if(this.forceStop) {
+    //                 this.updateStatus('pause')
+    //                 this.forceStop = false;
+    //             }else {
+    //                 this.updateStatus('afterSubmit')
+    //             }
+    //         }
+    //     })
+    // }, this.interval);
+
     stopQuery() {
-        clearInterval(this.intervalID);
         this.forceStop = true;
     }
 
@@ -258,10 +295,11 @@ class CourseScheduler {
         // 应该是要从searchContext里面找到课程
         return this.searchContext.find((oriCourseInfo) => {
             let flag = true;
-            for (let [key, value] of Object.entries(course)) {
-                if (value !== oriCourseInfo[key])
-                    flag = false;
-            }
+            if (course['kch'] !== oriCourseInfo['kch'] ||
+                course['kxh'] !== oriCourseInfo['kxh'] ||
+                course['zxjxjhh'] !== oriCourseInfo['zxjxjhh'] ||
+                course['kcm'] !== oriCourseInfo['kcm'])
+                flag = false;
             return flag
         })
     }
@@ -285,6 +323,12 @@ class CourseScheduler {
 
     updateCookie(cookie) {
         this.cookie = cookie;
+    }
+
+    updateInterval(courseInfo, interval) {
+        let index = this.findMatchingCourseIndex(courseInfo);
+        if (index !== -1)
+            this.pendingList[index].interval = interval;
     }
 
     getPendingListJson() {

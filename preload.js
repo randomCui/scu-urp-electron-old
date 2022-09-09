@@ -15,8 +15,7 @@ const {contextBridge, ipcRenderer} = require('electron')
 
 let indexBridge = {
     init_urp_login: async () => {
-        let buffer = await ipcRenderer.invoke('init_urp_login')
-        return buffer
+        return await ipcRenderer.invoke('init_urp_login')
     },
     urp_login: async (studentID, password, captcha) => {
         let post_data = {
@@ -52,8 +51,7 @@ let autoTakerBridge = {
                 "jc": 0,
                 "kclbdm": ""
             }
-            let response = await ipcRenderer.invoke('search_course', searchPayload)
-            return response;
+            return await ipcRenderer.invoke('search_course', searchPayload);
         } else if (searchMode === 'split') {
             let searchPayload = {
                 'zxjxjhh': '2022-2023-1-1',
@@ -70,9 +68,8 @@ let autoTakerBridge = {
                 'pageSize': 1000000,
                 'kclb': '',
             }
-            let response = await ipcRenderer.invoke('search_course_alt', searchPayload)
             // console.log(response)
-            return response
+            return await ipcRenderer.invoke('search_course_alt', searchPayload)
         }
     },
     is_course_selection_time: async () => {
@@ -128,6 +125,9 @@ let courseControlBridge = {
     },
     stopAll: () => {
         ipcRenderer.send('stopAll');
+    },
+    changeInterval: (courseInfo,interval)=>{
+        ipcRenderer.send('changeInterval',JSON.stringify(courseInfo),JSON.stringify(interval));
     }
 }
 

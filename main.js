@@ -51,7 +51,7 @@ const {ipcMain} = require('electron');
 const {jwc_entry_url, jwc_jc, jwc_captcha_url, jwc_home, http_head} = require('./src/js/config');
 let {JSESSIONID, isLogin} = require('./src/js/config')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
-const {DesiredCourse, CourseScheduler} = require('./src/js/course_taker');
+const {CourseScheduler} = require('./src/js/course_taker');
 const {Curriculum} = require('./src/js/courseSchedule');
 
 let globalCourseScheduler = new CourseScheduler();
@@ -146,8 +146,7 @@ ipcMain.handle('search_course', (event, payload) => {
         return response.text()
     }).then(text => {
         let totalResponse = JSON.parse(text);
-        let courseList = JSON.parse(totalResponse['rwRxkZlList']);
-        return courseList;
+        return JSON.parse(totalResponse['rwRxkZlList']);
     });
 })
 
@@ -210,9 +209,7 @@ ipcMain.handle('getExistingCurriculum', async () => {
 
 ipcMain.handle('getPendingList', () => {
     // console.log(globalCourseScheduler.getPendingListJson())
-    return JSON.stringify(globalCourseScheduler.getPendingListJson(),(key, value)=>{
-        return (key==='intervalID'?undefined:value)
-    });
+    return JSON.stringify(globalCourseScheduler.getPendingListJson());
 })
 
 ipcMain.on('startAll', () => {
@@ -221,4 +218,8 @@ ipcMain.on('startAll', () => {
 
 ipcMain.on('stopAll', () => {
     globalCourseScheduler.stopAll();
+})
+
+ipcMain.on('changeInterval', (event, courseInfo, interval) => {
+    globalCourseScheduler.updateInterval(JSON.parse(courseInfo), JSON.parse(interval));
 })

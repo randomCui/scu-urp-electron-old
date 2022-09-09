@@ -41,7 +41,7 @@ function buildList(pendingList) {
     let ul = document.querySelector('ul.pending-list-viewer');
     ul.innerHTML = '';
 
-    pendingList.forEach((course, index) => {
+    pendingList.forEach((course) => {
         let li = document.createElement('li');
         let divLeft = document.createElement('div');
         divLeft.setAttribute('style', 'float: left')
@@ -86,37 +86,37 @@ function updateList(courseList) {
             }
         }
         if (li !== undefined) {
-            updateInfo(li,course);
+            updateInfo(li, course);
         } else {
             ul.appendChild(makeNewRow(course));
         }
     })
 }
 
-function updateInfo(li,course){
+function updateInfo(li, course) {
     let temp = li.querySelectorAll('div div')
     temp[7].innerText = '已尝试' + course['triedTimes'] + '次';
-    temp[5].innerText = '轮询定时' + course['interval']/1000 + 's';
+    temp[5].innerText = '轮询定时' + course['interval'] / 1000 + 's';
     temp[4].innerText = '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's';
     temp[8].innerText = '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's';
     li.querySelector('div b').innerText = translateStatus(course['status']);
 }
 
-function calcTimeDelta(endTime,startTime){
-    if(isNaN(endTime-startTime))
+function calcTimeDelta(endTime, startTime) {
+    if (isNaN(endTime - startTime))
         return '--'
     else
-        return (endTime-startTime)/1000
+        return (endTime - startTime) / 1000
 }
 
-function translateStatus(status){
-    if(status==='success')
+function translateStatus(status) {
+    if (status === 'success')
         return '已成功'
-    if(status==='pending')
+    if (status === 'pending')
         return '等待响应'
-    if(status==='pause')
+    if (status === 'pause')
         return '暂停中'
-    if(status==='finish')
+    if (status === 'finish')
         return '等待下一次轮询'
 }
 
@@ -126,8 +126,8 @@ function fillInfo(li, course) {
     divLeft.setAttribute('style', 'float: left')
     divLeft.innerHTML =
         '<div>' +
-        '<span>' + course['kcm'].slice(0,14) + '</span>' +
-        '<span>' + course['skjs'].slice(0,7) + '</span>' +
+        '<span>' + course['kcm'].slice(0, 14) + '</span>' +
+        '<span>' + course['skjs'].slice(0, 7) + '</span>' +
         '</div>' +
         '<div>' +
         '<span>' + course['type'] + '</span>' +
@@ -139,13 +139,21 @@ function fillInfo(li, course) {
     divCenter.setAttribute('style', 'float: left; margin-left: 4em;');
     divCenter.innerHTML =
         '<div>' + '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's' + '</div>' +
-        '<div>' + '轮询定时' + course['internal']/1000 + 's' + '</div>'+
-        '<input style="display: inline; width: 6em" type="text">'
+        '<div>' + '轮询定时' + course['internal'] / 1000 + 's' + '</div>';
+    let input = document.createElement('input');
+    input.setAttribute('style', 'display: inline; width: 6em; type:text');
+    input.addEventListener('keyup', (ev) => {
+        if (ev.key === 'Enter') {
+            console.log(course);
+            window.courseControlBridge.changeInterval(course, input.value);
+        }
+    })
+    divCenter.appendChild(input);
 
     let divRight = document.createElement('div');
     divRight.setAttribute('style', 'float: left; margin-left: 4em;');
     divRight.innerHTML =
-        '<b class="statu-indicator">'+translateStatus(course['status'])+'</b>'+
+        '<b class="statu-indicator">' + translateStatus(course['status']) + '</b>' +
         '<div>' + '已尝试' + course['triedTimes'] + '次' + '</div>' +
         '<div>' + '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's' + '</div>'
 
@@ -162,7 +170,7 @@ function makeNewRow(course) {
     let li = document.createElement('li');
     li.setAttribute('id', course['kch'] + '-' + course['kxh'] + course['zxjxjhh'])
     fillInfo(li, course);
-    li.addEventListener('click',ev=>{
+    li.addEventListener('click', () => {
         if (li.getAttribute('class')?.includes('selected')) {
             li.setAttribute('class', '')
         } else {
