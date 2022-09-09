@@ -1,0 +1,31 @@
+ul.pending-list-viewer {
+    list-style-type: none;
+    padding: 0;
+}
+
+ul.pending-list-viewer > li {
+    margin-bottom: 0.5em;
+}
+
+ul.pending-list-viewer > li:hover{
+    background: lightgray;
+}
+
+ul.pending-list-viewer > li.selected{
+    border-left: 1em solid deepskyblue;
+    background: lightcyan;
+}
+
+ul.pending-list-viewer > li > div {
+    display: inline;
+}
+
+ul.pending-list-viewer > li > div.clear {
+    display: block;
+    clear: both;
+}
+
+ul.pending-list-viewer > li > div > div > span {
+    /*border-left: 1em;*/
+    margin-left: 1em;
+}

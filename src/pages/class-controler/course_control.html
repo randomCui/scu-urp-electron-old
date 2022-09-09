@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>四川大学urp教务助手 - Electron Build</title>
     <link href="../styles.css" rel="stylesheet">
+    <link href="class_controler.css" rel="stylesheet">
 </head>
 <body>
 <div>
@@ -20,23 +21,64 @@
             <input type="button" id="launch-all" value="全部开始">
             <input type="button" id="stop-all" value="全部结束">
             <input type="button" id="refresh" value="刷新">
-            <table id="pending-list-viewer">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>课程号</th>
-                    <th>课序号</th>
-                    <th>课程名</th>
-                    <th>授课教师</th>
-                    <th>上课教室</th>
-                    <th>选课状态</th>
-                    <th>是否开始选课</th>
-                </tr>
-                </thead>
-                <tbody>
+            <ul class="pending-list-viewer">
+                <li class="selected">
+                    <div style="float: left">
+                        <div>
+                            <span>微积分（1）-1</span>
+                            <span>验收中</span>
+                            <span>董崇敏</span>
+                        </div>
+                        <div>
+                            <span>必修</span>
+                            <span>304101011</span>
+                            <span>15</span>
+                        </div>
+                    </div>
+                    <div style="float: right;">
+                        <div>已尝试114次</div>
+                        <div>上次用时5.14s</div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
+                <li>
+                    <div style="float: left">
+                        <div>
+                            <span>微积分（1）-1</span>
+                            <span>验收中</span>
+                            <span>董崇敏</span>
+                        </div>
+                        <div>
+                            <span>必修</span>
+                            <span>304101011</span>
+                            <span>15</span>
+                        </div>
+                    </div>
+                    <div style="float: right;">
+                        <div>已尝试114次</div>
+                        <div>上次用时5.14s</div>
+                    </div>
+                    <div class="clear"></div>
+                </li>
 
-                </tbody>
-            </table>
+            </ul>
+<!--            <table id="pending-list-viewer">-->
+<!--                <thead>-->
+<!--                <tr>-->
+<!--                    <th></th>-->
+<!--                    <th>课程号</th>-->
+<!--                    <th>课序号</th>-->
+<!--                    <th>课程名</th>-->
+<!--                    <th>授课教师</th>-->
+<!--                    <th>上课教室</th>-->
+<!--                    <th>选课状态</th>-->
+<!--                    <th>是否开始选课</th>-->
+<!--                </tr>-->
+<!--                </thead>-->
+<!--                <tbody>-->
+
+<!--                </tbody>-->
+<!--            </table>-->
         </div>
     </div>
 </div>

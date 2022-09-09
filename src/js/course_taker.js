@@ -25,11 +25,12 @@ class DesiredCourse {
         this.triedTimes = 0;
         this.lastSubmitStartTime = undefined;
         this.lastSubmitFinishTime = undefined;
+        this.firstStartTime = undefined;
         // pending(等待选课返回结果), finish(结果已返回，等待下次提交) 两种状态
         this.status = 'pausing';
         // 是否开启抢课功能
         this.enable = 'false';
-        this.interval = 1000;
+        this.interval = 5000;
         this.intervalID = null;
     }
 
@@ -72,7 +73,6 @@ class DesiredCourse {
     }
 
     updateStatus(occasion) {
-        console.log(occasion);
         if (occasion === 'beforeSubmit') {
             this.triedTimes += 1;
             this.status = 'pending';
@@ -88,6 +88,7 @@ class DesiredCourse {
         } else if (occasion === 'pause') {
             this.enable = false;
             this.status = 'pause'
+            clearInterval(this.intervalID);
         }
     }
 
@@ -120,6 +121,8 @@ class DesiredCourse {
 
     startQuery(cookie) {
         const {test_submit_url} = require('../test/test_config')
+        this.cookie = cookie;
+        this.firstStartTime = Date.now();
         this.intervalID = setInterval(async () => {
             this.updateStatus('beforeSubmit')
             // 正式应使用course_select_submit_url
@@ -137,7 +140,7 @@ class DesiredCourse {
                 if (text.includes('ok')) {
                     this.updateStatus('success')
                 } else {
-                    this.updateStatus('failed')
+                    this.updateStatus('afterSubmit')
                 }
             })
         }, this.interval);
@@ -145,6 +148,14 @@ class DesiredCourse {
 
     stopQuery() {
         clearInterval(this.intervalID);
+    }
+
+    changeInterval(interval) {
+        if (interval < 0)
+            return false;
+        else {
+            this.interval = interval;
+        }
     }
 
 }
