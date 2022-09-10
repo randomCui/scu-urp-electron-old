@@ -194,6 +194,13 @@ ipcMain.handle('addCourse', async (event, jsonString) => {
     return JSON.stringify(status);
 })
 
+ipcMain.handle('deleteCourse', async (event, jsonString) => {
+    let courses = JSON.parse(jsonString);
+    for (let course of courses) {
+        globalCourseScheduler.deleteCourse(course);
+    }
+})
+
 ipcMain.on('initCourseSelection', () => {
     if (globalCourseScheduler === null) {
         globalCourseScheduler = new CourseScheduler(JSESSIONID);

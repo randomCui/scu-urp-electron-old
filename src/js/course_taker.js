@@ -260,9 +260,9 @@ class CourseScheduler {
 
     deleteCourse(course) {
         let index = this.findMatchingCourseIndex(course);
-        console.log(index);
-        this.pendingList.splice(index, 1);
-        console.log(this.pendingList)
+        // console.log(index);
+        if (index !== -1)
+            this.pendingList.splice(index, 1);
     }
 
     findMatchingCourse(course) {

@@ -8,11 +8,11 @@ ul.pending-list-viewer > li {
     margin-bottom: 0.5em;
 }
 
-ul.pending-list-viewer > li:hover{
+ul.pending-list-viewer > li:hover {
     background: lightgray;
 }
 
-ul.pending-list-viewer > li.selected{
+ul.pending-list-viewer > li.selected {
     border-left: 1em solid deepskyblue;
     background: lightcyan;
 }
@@ -32,13 +32,33 @@ ul.pending-list-viewer > li > div > div > span {
     white-space: nowrap;
 }
 
-ul.pending-list-viewer > li > div{
+ul.pending-list-viewer > li > div {
     /*border-left: 1em;*/
-    width:8em;
+    width: 8em;
     overflow: hidden;
 }
 
-ul.pending-list-viewer > li > div:first-child{
+ul.pending-list-viewer > li > div:first-child {
     /*border-left: 1em;*/
     width: 15em;
+}
+
+
+ul.pending-list-viewer > li > div.cancel-icon {
+    display: inline-block;
+    height: 4em;
+    visibility: hidden;
+    width: 2em;
+}
+
+ul.pending-list-viewer > li:hover > div.cancel-icon {
+    display: inline-block;
+    height: 4em;
+    visibility: visible;
+}
+
+ul.pending-list-viewer > li > div.cancel-icon > span {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }

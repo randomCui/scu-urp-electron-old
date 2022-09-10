@@ -13,6 +13,10 @@ document.getElementById('stop-all').addEventListener('click', () => {
     window.courseControlBridge.stopAll();
 });
 
+// document.getElementById('launch-selected').addEventListener('click', () => {
+//     let ul = document.querySelectorAll('ul')
+// })
+
 function buildTable(pendingList) {
     document.querySelector('table tbody').innerHTML = '';
     let table = document.querySelector('#pending-list-viewer tbody')
@@ -151,6 +155,10 @@ function fillInfo(li, course) {
             window.courseControlBridge.changeInterval(course, input.value);
         }
     })
+    input.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+        ev.preventDefault();
+    })
     divCenter.appendChild(input);
 
     let divRight = document.createElement('div');
@@ -160,12 +168,27 @@ function fillInfo(li, course) {
         '<div>' + '已尝试' + course['triedTimes'] + '次' + '</div>' +
         '<div>' + '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's' + '</div>'
 
+    let divCancel = document.createElement('div');
+    divCancel.setAttribute('style', 'float: left; margin-left: 1em;');
+    divCancel.setAttribute('class', 'cancel-icon');
+
+    let span = document.createElement('span');
+    span.setAttribute('class', 'material-outlined-icons');
+    span.innerText = 'delete'
+    divCancel.appendChild(span);
+
+    divCancel.addEventListener('click', () => {
+        window.autoTakerBridge.deleteCourse(JSON.stringify([course]));
+        li.innerHTML = '';
+    })
+
     let divClear = document.createElement('div');
     divClear.setAttribute('class', 'clear');
 
     li.appendChild(divLeft);
     li.appendChild(divCenter);
     li.appendChild(divRight);
+    li.appendChild(divCancel);
     li.appendChild(divClear);
 }
 
