@@ -128,9 +128,7 @@ class DesiredCourse {
         if (this.status === 'success')
             return;
         this.firstStartTime = Date.now();
-        let that = this;
-        this.timeoutID = setTimeout(this.start.bind(this), that.interval);
-
+        this.timeoutID = setTimeout(this.start.bind(this), 0);
     }
 
     async start() {
@@ -162,40 +160,16 @@ class DesiredCourse {
                     this.updateStatus('afterSubmit');
                 }
             }
-            let that = this;
-            this.timeoutID = setTimeout(this.start.bind(this), that.interval);
+
+            let timeLeft = this.interval - (Date.now() - this.lastSubmitStartTime);
+            if (timeLeft < 0) {
+                timeLeft = 0;
+            }
+
+            this.timeoutID = setTimeout(this.start.bind(this), timeLeft);
         })
     }
 
-    // this.intervalID = setInterval(async () => {
-    //     // 说明上一次的轮询还没有结束
-    //     if(this.status==='pending')
-    //         return;
-    //     this.updateStatus('beforeSubmit')
-    //     // 正式应使用course_select_submit_url
-    //     await fetch(test_submit_url, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Cookie': cookie,
-    //             'User-Agent': http_head,
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify(this.postPayload),
-    //     }).then(response => {
-    //         return response.text();
-    //     }).then(text => {
-    //         if (text.includes('ok')) {
-    //             this.updateStatus('success')
-    //         } else {
-    //             if(this.forceStop) {
-    //                 this.updateStatus('pause')
-    //                 this.forceStop = false;
-    //             }else {
-    //                 this.updateStatus('afterSubmit')
-    //             }
-    //         }
-    //     })
-    // }, this.interval);
 
     stopQuery() {
         this.forceStop = true;

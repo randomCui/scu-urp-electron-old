@@ -60,7 +60,7 @@ function buildList(pendingList) {
         divRight.setAttribute('style', 'float: right; margin-left: 4em;');
         divRight.innerHTML +=
             '<div>' + '已尝试' + course['triedTimes'] + '次' + '</div>' +
-            '<div>' + '上次用时' + ((course['lastSubmitFinishTime'] - course['lastSubmitStartTime']) / 1000) + 's' + '</div>' +
+            '<div>' + '本次用时' + ((course['lastSubmitFinishTime'] - course['lastSubmitStartTime']) / 1000) + 's' + '</div>' +
             '<div>' + '总用时' + ((course['lastSubmitFinishTime'] - course['firstStartTime']) / 1000) + 's' + '</div>'
 
         let divClear = document.createElement('div');
@@ -97,7 +97,7 @@ function updateInfo(li, course) {
     let temp = li.querySelectorAll('div div')
     temp[7].innerText = '已尝试' + course['triedTimes'] + '次';
     temp[5].innerText = '轮询定时' + course['interval'] / 1000 + 's';
-    temp[4].innerText = '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's';
+    temp[4].innerText = '本次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's';
     temp[8].innerText = '总用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['firstStartTime']) + 's';
     li.querySelector('div b').innerText = translateStatus(course['status']);
 }
@@ -105,8 +105,11 @@ function updateInfo(li, course) {
 function calcTimeDelta(endTime, startTime) {
     if (isNaN(endTime - startTime))
         return '--'
-    else
+    else if (endTime >= startTime) {
         return (endTime - startTime) / 1000
+    } else {
+        return (Date.now() - startTime) / 1000;
+    }
 }
 
 function translateStatus(status) {
@@ -138,7 +141,7 @@ function fillInfo(li, course) {
     let divCenter = document.createElement('div');
     divCenter.setAttribute('style', 'float: left; margin-left: 4em;');
     divCenter.innerHTML =
-        '<div>' + '上次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's' + '</div>' +
+        '<div>' + '本次用时' + calcTimeDelta(course['lastSubmitFinishTime'], course['lastSubmitStartTime']) + 's' + '</div>' +
         '<div>' + '轮询定时' + course['internal'] / 1000 + 's' + '</div>';
     let input = document.createElement('input');
     input.setAttribute('style', 'display: inline; width: 6em; type:text');
@@ -187,17 +190,4 @@ window.setInterval(() => {
         updateList(pendingList);
     })
 
-}, 200)
-
-
-// document.querySelector('ul.pending-list-viewer').addEventListener('click', (ev) => {
-//     let row = ev.target;
-//     if (row.getAttribute('class')?.includes('selected')) {
-//         row.setAttribute('class', '')
-//     } else {
-//         row.setAttribute('class', 'selected')
-//         console.log(row)
-//     }
-// },true)
-
-
+}, 10)
