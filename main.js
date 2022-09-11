@@ -127,6 +127,16 @@ ipcMain.handle('urp_login', async (event, post_data) => {
     })
 })
 
+ipcMain.on('rememberPassword', (event, studentID, password) => {
+    const {saveLoginInfo} = require('./src/js/rememberMe');
+    saveLoginInfo(studentID, password);
+})
+
+ipcMain.handle('readLoginInfo', () => {
+    const {readLoginInfo} = require('./src/js/rememberMe');
+    return JSON.stringify(readLoginInfo());
+})
+
 ipcMain.handle('check_login_state', () => {
     return isLogin
 })

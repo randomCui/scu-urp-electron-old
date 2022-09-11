@@ -28,8 +28,14 @@ let indexBridge = {
         })
     },
     check_login_state: async () => {
-        return await ipcRenderer.invoke('check_login_state',)
+        return await ipcRenderer.invoke('check_login_state',);
     },
+    rememberPassword: (studentID, password) => {
+        ipcRenderer.send('rememberPassword', studentID, password);
+    },
+    readLoginInfo: async () => {
+        return await ipcRenderer.invoke('readLoginInfo');
+    }
 }
 
 let autoTakerBridge = {
@@ -126,8 +132,8 @@ let courseControlBridge = {
     stopAll: () => {
         ipcRenderer.send('stopAll');
     },
-    changeInterval: (courseInfo,interval)=>{
-        ipcRenderer.send('changeInterval',JSON.stringify(courseInfo),JSON.stringify(interval));
+    changeInterval: (courseInfo, interval) => {
+        ipcRenderer.send('changeInterval', JSON.stringify(courseInfo), JSON.stringify(interval));
     }
 }
 
